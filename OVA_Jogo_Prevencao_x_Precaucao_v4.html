@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Missão Ambiental</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--s:1.2;--red:#D3221B;--red-d:#8E1310;--wine:#2A0706;--black:#120404;--gold:#ffd166}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:radial-gradient(120% 90% at 50% 0%,#3a0b0a 0%,var(--black) 60%);color:#fff;font-family:VT323,monospace;font-size:calc((22px)*var(--s));line-height:1.15;overflow-x:hidden}
+.px{font-family:"Press Start 2P",monospace;line-height:1.5}
+button{font:inherit;cursor:pointer}
+.hidden{display:none!important}
+#app{max-width:960px;margin:0 auto;padding:10px 12px 24px}
+
+.pbtn{font-family:"Press Start 2P",monospace;font-size:calc((12px)*var(--s));color:#fff;background:var(--red);border:none;padding:12px 16px;box-shadow:inset -3px -3px 0 var(--red-d),inset 3px 3px 0 #ff6b5e,0 4px 0 #000;text-transform:uppercase;letter-spacing:1px}
+.pbtn:hover{filter:brightness(1.1)}
+.pbtn:active{transform:translateY(3px);box-shadow:inset -3px -3px 0 var(--red-d),inset 3px 3px 0 #ff6b5e,0 1px 0 #000}
+.pbtn.alt{background:#3a3a3a;box-shadow:inset -3px -3px 0 #1d1d1d,inset 3px 3px 0 #5a5a5a,0 4px 0 #000}
+.pbtn:disabled{opacity:.4;cursor:not-allowed}
+.frame{background:#1b0706;border:4px solid #fff;box-shadow:0 0 0 4px #000,8px 8px 0 4px rgba(0,0,0,.5)}
+
+#scrTitle{text-align:center;padding:20px 0}
+#scrTitle img{width:min(200px,50vw);display:block;margin:0 auto 18px;filter:drop-shadow(6px 6px 0 rgba(0,0,0,.6))}
+#scrTitle h1{font-family:"Press Start 2P",monospace;font-size:calc((clamp(18px,4.4vw,34px))*var(--s));line-height:1.4;margin:6px 0 8px;text-shadow:4px 4px 0 #000}
+#scrTitle h1 span{color:var(--red)}
+#scrTitle .sub{color:#f3c9c5;margin-bottom:22px}
+.blink{animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.tchips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:0 0 24px}
+.tchips span{border:2px solid #f3c9c5;padding:3px 10px;color:#f3c9c5}
+
+#scrSelect h2{font-family:"Press Start 2P",monospace;font-size:calc((clamp(14px,3vw,20px))*var(--s));text-align:center;margin:14px 0 18px;text-shadow:3px 3px 0 #000}
+.avgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.av{position:relative}
+.av.special{border-color:#ffd166;background:linear-gradient(180deg,#3a2a06,#1b0706)}
+.av.special.sel{border-color:#ffd166;box-shadow:0 0 0 3px #fff,0 0 18px #ffd166}
+.av .badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#ffd166;color:#111;font-family:"Press Start 2P",monospace;font-size:calc(8px*var(--s));padding:3px 6px;white-space:nowrap;border:2px solid #000}
+.av{background:#1b0706;border:4px solid #5a2a28;padding:12px 8px;text-align:center;color:#fff}
+.av canvas{width:72px;height:96px;image-rendering:pixelated;display:block;margin:4px auto 8px}
+.av b{font-family:"Press Start 2P",monospace;font-size:calc((10px)*var(--s));display:block;margin-bottom:6px}
+.av small{color:#d9b8b5;font-size:calc((18px)*var(--s));display:block}
+.av.sel{border-color:var(--red);background:#3a0d0b;transform:translateY(-4px);box-shadow:0 0 0 3px #fff}
+.namebox{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin:20px 0 6px}
+.namebox input{font-family:"Press Start 2P",monospace;font-size:calc((12px)*var(--s));background:#000;color:#fff;border:3px solid #fff;padding:10px;width:220px;max-width:100%}
+
+#hud{display:flex;align-items:center;gap:10px;background:#000;border:3px solid #fff;padding:6px 10px;font-family:"Press Start 2P",monospace;font-size:calc((10px)*var(--s))}
+#hud canvas{width:24px;height:32px;image-rendering:pixelated}
+#hud .grow{flex:1;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#hud .sc{color:var(--gold)}
+#mute{background:none;border:2px solid #fff;color:#fff;font-family:"Press Start 2P",monospace;font-size:calc((9px)*var(--s));padding:4px 6px}
+#prog{display:flex;gap:3px;background:#000;border:3px solid #fff;border-top:none;padding:4px 8px}
+#prog i{flex:1;height:8px;background:#3a3a3a}
+#prog i.d{background:var(--gold)}#prog i.c{background:var(--red)}
+#quest{background:#fff;color:#111;border:3px solid #000;border-top:none;padding:8px 12px;min-height:46px;font-size:calc((21px)*var(--s))}
+#quest b{font-family:"Press Start 2P",monospace;font-size:calc((10px)*var(--s));color:var(--red);margin-right:6px}
+#quest small{color:#555;font-size:calc((18px)*var(--s))}
+#quest .qo{display:block;margin-top:2px}
+#quest .qo span{font-family:"Press Start 2P",monospace;font-size:calc((10px)*var(--s));color:#fff;padding:1px 5px;margin-right:4px}
+#stage{position:relative;border:3px solid #fff;border-top:none;background:#000;box-shadow:8px 8px 0 rgba(0,0,0,.5)}
+#cv{display:block;width:min(100%,calc(78vh*16/9));margin:0 auto;aspect-ratio:16/9;image-rendering:pixelated}
+#scrGame:fullscreen{background:#120404;padding:8px;overflow:auto}
+#rot{display:none;text-align:center;color:#ffd166;margin-top:10px}
+@media (orientation:portrait) and (max-width:820px){#rot{display:block}}
+.acc{display:inline-flex;gap:4px}
+.acc button{background:none;border:2px solid #fff;color:#fff;font-family:"Press Start 2P",monospace;font-size:calc(9px*var(--s));padding:4px 6px;min-width:32px}
+#hud{flex-wrap:wrap}
+.logo{image-rendering:pixelated}
+#toast{position:absolute;left:50%;top:12%;transform:translateX(-50%);background:#000;border:3px solid #fff;padding:8px 12px;font-family:"Press Start 2P",monospace;font-size:calc((10px)*var(--s));white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s;max-width:96%;overflow:hidden;text-overflow:ellipsis}
+#toast.on{opacity:1}
+.hint{text-align:center;color:#d9b8b5;font-size:calc((19px)*var(--s));margin-top:10px}
+#pad{display:none;justify-content:space-between;align-items:center;margin-top:12px;gap:12px;user-select:none;-webkit-user-select:none}
+#pad .grp{display:flex;gap:12px}
+#pad button{width:76px;height:64px;font-family:"Press Start 2P",monospace;font-size:calc((20px)*var(--s));color:#fff;background:#3a3a3a;border:none;box-shadow:inset -4px -4px 0 #1d1d1d,inset 4px 4px 0 #5a5a5a,0 4px 0 #000;touch-action:none}
+#pad button.jump{background:var(--red);box-shadow:inset -4px -4px 0 var(--red-d),inset 4px 4px 0 #ff6b5e,0 4px 0 #000;width:96px}
+#pad button.on{transform:translateY(3px)}
+@media (hover:none),(max-width:820px){#pad{display:flex}.hint{display:none}}
+
+#modal{position:fixed;inset:0;background:rgba(10,0,0,.72);display:flex;align-items:center;justify-content:center;padding:14px;z-index:50}
+.mbox{width:min(680px,100%);max-height:92vh;overflow:auto;background:#fff;color:#111;border:4px solid #000;box-shadow:0 0 0 4px #fff,10px 10px 0 4px rgba(0,0,0,.6);padding:16px 18px;animation:pop .18s steps(3)}
+@keyframes pop{from{transform:scale(.8)}to{transform:none}}
+.mhead{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.mhead canvas{width:48px;height:64px;image-rendering:pixelated;background:#f3e9e8;border:3px solid #000;flex:0 0 auto}
+#mtitle{font-family:"Press Start 2P",monospace;font-size:calc((13px)*var(--s));line-height:1.5;color:var(--red)}
+#mbody p{margin:0 0 10px}
+.law{display:inline-block;background:#111;color:#fff;padding:0 6px;margin:2px 0}
+#mbody blockquote{margin:8px 0;padding:8px 12px;border-left:6px solid var(--red);background:#f6eeed}
+#mbtns{display:flex;justify-content:flex-end;gap:10px;margin-top:12px;flex-wrap:wrap}
+.opt{display:block;width:100%;text-align:left;background:#f6eeed;border:3px solid #111;padding:10px 12px;margin-bottom:8px;font-family:VT323,monospace;font-size:calc((21px)*var(--s));color:#111;box-shadow:3px 3px 0 #111}
+.opt:hover:not(:disabled){background:#ffe3e0;border-color:var(--red)}
+.opt:disabled{cursor:default;opacity:.55}
+.opt.sel{opacity:1;background:#111;color:#fff}
+.opt .k{font-family:"Press Start 2P",monospace;font-size:calc((10px)*var(--s));color:var(--red);margin-right:8px}
+.fb{border:3px solid #111;padding:10px 12px;margin-top:8px}
+.fb.ok{background:#e3f7ea;border-color:#1f7a4d}
+.fb.bad{background:#fde7e5;border-color:#b3261e}
+.fb.warn{background:#fff4dc;border-color:#8a5a00}
+.fb .v{font-family:"Press Start 2P",monospace;font-size:calc((11px)*var(--s));display:block;margin-bottom:6px}
+.fb.ok .v{color:#1f7a4d}.fb.bad .v{color:#b3261e}.fb.warn .v{color:#8a5a00}
+.big{font-family:"Press Start 2P",monospace;font-size:calc((26px)*var(--s));color:var(--red);text-align:center;margin:10px 0 14px}
+.stars{text-align:center;font-size:calc((34px)*var(--s));letter-spacing:6px;margin-bottom:6px;color:#e6a400}
+.thermo input{width:100%;accent-color:var(--red);height:30px}
+.thermo .sc{display:flex;justify-content:space-between;font-size:calc((17px)*var(--s));color:#555}
+.thermo .sc span{flex:1}.thermo .sc span:nth-child(2){text-align:center}.thermo .sc span:last-child{text-align:right}
+.thermo .out{border:3px solid #111;padding:10px;margin-top:8px;min-height:120px}
+.tag{font-family:"Press Start 2P",monospace;font-size:calc((10px)*var(--s));color:#fff;padding:3px 8px;display:inline-block;margin-bottom:6px}
+.qlist .opt{cursor:default}
+/* Memória */
+.mem{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.card{min-height:92px;border:3px solid #111;background:var(--red);color:#fff;font-family:VT323,monospace;font-size:calc((19px)*var(--s));line-height:1.05;padding:6px;box-shadow:3px 3px 0 #111;display:flex;align-items:center;justify-content:center;text-align:center}
+.card.back{background:repeating-linear-gradient(45deg,#D3221B 0 6px,#b51c16 6px 12px);font-family:"Press Start 2P",monospace;font-size:calc((18px)*var(--s))}
+.card.open{background:#fff;color:#111}
+.card.law2{background:#111;color:#ffd166}
+.card.done{background:#e3f7ea;color:#1f7a4d;border-color:#1f7a4d;cursor:default}
+.card.wrong{background:#fde7e5;color:#b3261e;border-color:#b3261e}
+.memstat{font-family:"Press Start 2P",monospace;font-size:calc((10px)*var(--s));display:flex;justify-content:space-between;margin-top:6px}
+
+/* Fim */
+#scrEnd .frame{padding:18px;margin-bottom:16px}
+#scrEnd h2{font-family:"Press Start 2P",monospace;font-size:calc((clamp(14px,3vw,20px))*var(--s));margin:0 0 12px;line-height:1.5}
+#scrEnd h3{font-family:"Press Start 2P",monospace;font-size:calc((12px)*var(--s));color:var(--gold);margin:16px 0 8px}
+#endCv{display:block;width:100%;aspect-ratio:16/9;image-rendering:pixelated;border:3px solid #fff;margin-bottom:14px;background:#000}
+.endtop{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.pct{font-family:"Press Start 2P",monospace;font-size:calc((40px)*var(--s));color:var(--gold);text-shadow:4px 4px 0 #000}
+.rev li{margin-bottom:8px}
+.rev b{color:var(--gold)}
+.rev .law{background:#3a3a3a}
+.refs{padding-left:22px;font-size:calc((20px)*var(--s))}
+.refs li{margin-bottom:5px}
+.ia{border:3px dashed var(--red);padding:12px;background:#000}
+.endtop img{height:96px;margin-left:auto}
+.shake{animation:shake .5s steps(8)}
+@keyframes shake{0%,100%{transform:none}20%{transform:translate(-8px,4px)}40%{transform:translate(7px,-5px)}60%{transform:translate(-6px,3px)}80%{transform:translate(5px,-2px)}}
+footer{text-align:center;color:#a88;font-size:calc((18px)*var(--s));margin-top:10px}
+
+@media (max-width:900px){.avgrid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:640px){
+  .avgrid{grid-template-columns:repeat(2,1fr)}
+  #app{padding:6px 4px 24px}
+  body{font-size:calc((20px)*var(--s))}
+  #quest{font-size:calc((19px)*var(--s))}
+  #hud{font-size:calc((8px)*var(--s))}
+  .endtop img{margin-left:0}
+  .mem{grid-template-columns:repeat(3,1fr)}
+  .card{font-size:calc((17px)*var(--s));min-height:84px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <section id="scrTitle">
+    <img class="logo" data-logo alt="Logo do jogo Missão Prevenção x Precaução">
+    <div class="px" style="font-size:calc((10px)*var(--s));color:#f3c9c5;letter-spacing:2px">PROJETO OVA · DIREITO AMBIENTAL<br>FACULDADE BAIANA DE DIREITO</div>
+    <h1>MISSÃO<br><span>PREVENÇÃO</span> x PRECAUÇÃO</h1>
+    <div class="sub">Um mini game sobre os dois princípios que agem <b>antes</b> do <b>dano ambiental</b>.</div>
+    <div class="sub" style="font-size:calc(18px*var(--s));margin-bottom:14px"><b>Equipe:</b> Anna Gatto · Vitória Nascimento · Martha Lopes · Leonardo Rustom · Maria Luiza · Mariana Ledoux · Saulo Lopes</div>
+    <div class="tchips"><span>8 FASES</span><span>CORRIDA MALUCA</span><span>1 CHEFÃO</span><span>★ GUANABINHA</span></div>
+    <button class="pbtn" onclick="toSelect()"><span class="blink">▶</span> JOGAR</button>
+  </section>
+
+  <section id="scrSelect" class="hidden">
+    <h2>ESCOLHA SEU AVATAR</h2>
+    <div class="avgrid" id="avgrid"></div>
+    <div class="namebox">
+      <label class="px" style="font-size:calc((10px)*var(--s))" for="pname">SEU NOME:</label>
+      <input id="pname" maxlength="12" placeholder="JURISTA">
+    </div>
+    <div style="text-align:center;margin-top:16px"><button class="pbtn" id="goBtn" disabled onclick="startGame()">COMEÇAR ▶</button></div>
+  </section>
+
+  <section id="scrGame" class="hidden">
+    <div id="hud">
+      <canvas id="hudAv" width="12" height="16"></canvas>
+      <img class="logo" data-logo alt="" style="height:30px;width:30px"><span id="hudName">JURISTA</span>
+      <span class="grow" id="hudPhase" style="color:#f3c9c5">FASE 1</span>
+      <span class="sc" id="hudScore">★ 0</span>
+      <span class="acc"><button onclick="fontStep(-1)" aria-label="Diminuir letras">A−</button><button onclick="fontStep(1)" aria-label="Aumentar letras">A+</button><button onclick="fullScreen()" aria-label="Tela cheia">⛶</button></span>
+      <button id="mute" onclick="toggleMute()">SOM ON</button>
+    </div>
+    <div id="prog"></div>
+    <div id="quest"></div>
+    <div id="stage">
+      <canvas id="cv" width="320" height="180"></canvas>
+      <div id="toast"></div>
+    </div>
+    <div class="hint" id="hint"></div>
+    <div id="rot">📱 Dica: gire o celular na horizontal ou toque em ⛶ para ver o jogo maior.</div>
+    <div id="pad">
+      <div class="grp"><button data-k="left" id="padL">◀</button><button data-k="right" id="padR">▶</button></div>
+      <button class="jump" data-k="jump" id="padJ">▲</button>
+    </div>
+  </section>
+
+  <section id="scrEnd" class="hidden"></section>
+
+  <footer>Objeto Virtual de Aprendizagem · Direito Ambiental · Trabalho acadêmico<br><b>Equipe:</b> Anna Gatto · Vitória Nascimento · Martha Lopes · Leonardo Rustom · Maria Luiza · Mariana Ledoux · Saulo Lopes</footer>
+</div>
+
+<div id="modal" class="hidden"><div class="mbox">
+  <div class="mhead"><canvas id="mport" width="12" height="16"></canvas><div id="mtitle"></div></div>
+  <div id="mbody"></div>
+  <div id="mbtns"></div>
+</div></div>
+
+<script>
+/* =====================================================================
+   CONTEÚDO JURÍDICO
+   ===================================================================== */
+const CL=[
+ {q:'A atividade de mineração vai rebaixar o lençol freático da região, efeito já medido em dezenas de empreendimentos semelhantes.',a:'prev',topic:'Mineração e lençol freático',e:'O impacto é <b>conhecido e mensurável</b>. Exige-se EIA/RIMA e condicionantes para evitar ou mitigar o dano (<span class="law">CF, art. 225, §1º, IV</span>).'},
+ {q:'Uma nanopartícula nova será usada em protetores solares. Não se sabe se ela se acumula em corais.',a:'prec',topic:'Nanopartícula e corais',e:'Há <b>incerteza científica</b> com ameaça plausível a um ecossistema sensível. A ausência de certeza não justifica adiar medidas (<span class="law">Princípio 15, Rio/92</span>).'},
+ {q:'Exigir filtro na chaminé de uma fábrica cuja emissão de material particulado é comprovadamente poluente.',a:'prev',topic:'Filtro em chaminé',e:'O dano da emissão é <b>certo e conhecido</b>. O filtro é medida preventiva clássica, ligada aos padrões de qualidade ambiental (<span class="law">Lei 6.938/81, art. 9º, I</span>).'},
+ {q:'“In dubio pro natura”: na dúvida sobre o risco, decide-se a favor do meio ambiente.',a:'prec',topic:'In dubio pro natura',e:'O brocardo traduz a lógica da <b>precaução</b>: a dúvida científica favorece a proteção ambiental.'},
+ {q:'A CTNBio analisa a liberação comercial de uma nova planta transgênica com efeitos ainda pouco estudados sobre polinizadores.',a:'prec',topic:'Transgênico na CTNBio',e:'A Lei de Biossegurança manda observar expressamente o <b>princípio da precaução</b> (<span class="law">Lei 11.105/05, art. 1º</span>).'},
+ {q:'Exigir tanque com proteção contra vazamento em posto de combustível, para evitar contaminação do solo.',a:'prev',topic:'Tanque de posto de combustível',e:'Vazamentos de combustível contaminam solo e água. O risco é <b>conhecido</b>. O licenciamento de postos é regulado pela <span class="law">Resolução CONAMA 273/2000</span>.'}
+];
+/* Chuva de princípios */
+const DROPS=[
+ {l:'RISCO CERTO',k:'prev',e:'Risco certo e conhecido é campo da PREVENÇÃO.'},
+ {l:'EIA/RIMA',k:'both',e:'O EIA/RIMA serve aos DOIS princípios: avalia impactos conhecidos (prevenção) e ajuda a identificar riscos ainda incertos (precaução). CF, art. 225, §1º, IV.'},
+ {l:'IMPACTO MEDIDO',k:'prev',e:'Impacto já medido e conhecido = PREVENÇÃO.'},
+ {l:'DANO PREVISÍVEL',k:'prev',e:'Dano previsível = PREVENÇÃO.'},
+ {l:'FILTRO CHAMINÉ',k:'prev',e:'Filtro contra poluição comprovada = PREVENÇÃO.'},
+ {l:'INCERTEZA',k:'prec',e:'Incerteza científica é o gatilho da PRECAUÇÃO.'},
+ {l:'PRINCÍPIO 15',k:'prec',e:'O Princípio 15 da Rio/92 é a base da PRECAUÇÃO.'},
+ {l:'PRO NATURA',k:'prec',e:'“In dubio pro natura” traduz a PRECAUÇÃO.'},
+ {l:'ÔNUS INVERTIDO',k:'prec',e:'A inversão do ônus da prova é efeito da PRECAUÇÃO (Súmula 618/STJ).'},
+ {l:'LEI 11.105',k:'both',e:'A Lei de Biossegurança dialoga com os DOIS: o art. 1º cita a precaução, e outros dispositivos tratam de prevenção (art. 14, XVII; art. 18, II).'}
+];
+/* Corrida maluca */
+const RACE=[
+ {q:'Qual documento internacional traz o princípio da precaução no seu Princípio 15?',o:['Declaração do Rio (1992)','Protocolo de Kyoto (1997)','Declaração de Estocolmo (1972)'],a:0,topic:'Origem internacional da precaução',e:'O <span class="law">Princípio 15 da Declaração do Rio (1992)</span> diz que a ausência de certeza científica absoluta não pode adiar medidas diante de ameaça de dano grave ou irreversível.'},
+ {q:'Risco CONHECIDO e mensurável chama qual princípio?',o:['Precaução','Prevenção','Poluidor-pagador'],a:1,topic:'Risco conhecido = prevenção',e:'Risco conhecido = <b>prevenção</b>. O poluidor-pagador é outro princípio: trata de internalizar os custos da poluição, não do grau de certeza do risco.'},
+ {q:'Onde a Constituição exige o estudo prévio de impacto ambiental (EIA)?',o:['CF, art. 5º, LXXIII','CF, art. 170, VI','CF, art. 225, §1º, IV'],a:2,topic:'Base constitucional do EIA',e:'O <span class="law">art. 225, §1º, IV</span> exige EIA para obra ou atividade potencialmente causadora de significativa degradação. O art. 5º, LXXIII trata da ação popular, e o art. 170, VI coloca a defesa do meio ambiente como princípio da ordem econômica.'},
+ {q:'Qual súmula do STJ admite a inversão do ônus da prova nas ações de degradação ambiental?',o:['Súmula 613','Súmula 618','Súmula 629'],a:1,topic:'Súmula 618/STJ',e:'É a <span class="law">Súmula 618</span>. A 613 veda a teoria do fato consumado em Direito Ambiental, e a 629 admite cumular obrigação de fazer ou não fazer com indenização.'},
+ {q:'A precaução exige ameaça de dano…',o:['qualquer, mesmo imaginária','grave ou irreversível','já consumado'],a:1,topic:'Requisito da precaução',e:'O <span class="law">Princípio 15</span> fala em ameaça de danos <b>graves ou irreversíveis</b>. Risco imaginário, sem base plausível, não basta, e dano consumado é campo da reparação.'},
+ {q:'Qual lei tipifica como crime deixar de adotar medidas de precaução exigidas pela autoridade em caso de risco de dano grave ou irreversível?',o:['Lei 9.605/98, art. 54, §3º','Lei 6.938/81, art. 14','Lei 11.105/05, art. 1º'],a:0,topic:'Crime do art. 54, §3º',e:'É a <span class="law">Lei 9.605/98, art. 54, §3º</span>. O art. 14 da Lei 6.938/81 trata de penalidades e da responsabilidade objetiva, e o art. 1º da Lei 11.105/05 traz as diretrizes da biossegurança.'},
+ {q:'Qual política nacional prevê expressamente “a prevenção e a precaução” como princípios?',o:['Código de Defesa do Consumidor','Política Nacional de Resíduos Sólidos','Código Civil'],a:1,topic:'PNRS: prevenção e precaução',e:'A <span class="law">Lei 12.305/2010, art. 6º, I</span> (PNRS) lista “a prevenção e a precaução” como princípios. A Política Nacional sobre Mudança do Clima também os prevê (<span class="law">Lei 12.187/2009, art. 3º</span>).'}
+];
+/* Memória */
+const MEM=[
+ ['Princípio 15 · Rio/92','Falta de certeza científica não adia medidas'],
+ ['CF, art. 225, §1º, IV','Estudo prévio de impacto ambiental (EIA)'],
+ ['Súmula 618/STJ','Inversão do ônus da prova na degradação ambiental'],
+ ['Lei 11.105/05, art. 1º','Biossegurança: observância da precaução'],
+ ['Lei 9.605/98, art. 54, §3º','Crime: não adotar medidas de precaução exigidas'],
+ ['Lei 12.305/10, art. 6º, I','PNRS: “a prevenção e a precaução”']
+];
+const CS=[
+ {ico:'posto',tag:'CASO A',t:'Posto Litoral',topic:'Caso A · Posto de combustível',d:'Um posto de combustíveis em Lauro de Freitas funciona com tanques antigos, sem sistema de detecção de vazamento. Laudo técnico aponta <b>risco de vazamento</b> e infiltração de benzeno no solo de um terreno vizinho. O dano <b>ainda não ocorreu</b>.',
+  o:[{t:'Precaução: suspender até haver consenso científico sobre o benzeno.',k:'bad',e:'O risco de vazamento de tanques antigos sem detecção e a toxicidade do benzeno já são <b>conhecidos</b> pela ciência. Não há incerteza científica; tratar o caso como precaução erra o fundamento.'},
+     {t:'Prevenção: exigir a troca dos tanques, a instalação de sistema de detecção de vazamento e monitoramento, com base no licenciamento.',k:'ok',e:'O risco é <b>conhecido</b> e o dano <b>ainda pode ser evitado</b>. Cabe impor medidas preventivas e de controle no licenciamento (<span class="law">Res. CONAMA 273/2000</span> <span class="law">Lei 6.938/81, art. 10</span>).<br><b>Atenção:</b> se o vazamento <b>já tivesse ocorrido</b>, a resposta seria o princípio do <b>poluidor-pagador</b>: o poluidor responde pela recuperação e indenização do dano (<span class="law">Lei 6.938/81, art. 4º, VII</span> <span class="law">art. 14, §1º</span> <span class="law">CF, art. 225, §3º</span>).'},
+     {t:'Nenhum princípio: só cabe indenização depois.',k:'bad',e:'Esperar o dano acontecer para só depois indenizar contraria o <span class="law">art. 225 da CF</span>, que impõe o dever de <b>preservar</b>. Indenizar depois é tarefa do <b>poluidor-pagador</b>, que entra quando o dano já ocorreu. Aqui o risco é conhecido e o dano ainda pode ser evitado: é caso de <b>prevenção</b>.'}]},
+ {ico:'torre',tag:'CASO B',t:'Linhas de transmissão',topic:'Caso B · Linhas de transmissão (RE 627.189)',d:'Moradores pedem a retirada de linhas de transmissão de energia alegando risco à saúde. A legislação federal segue os limites recomendados pela OMS, e não há evidência científica atual de dano abaixo desses limites.',
+  o:[{t:'Precaução obriga a retirada imediata: na dúvida, remove-se.',k:'bad',e:'No <b>RE 627.189/SP (Tema 479)</b>, o STF reconheceu o princípio da precaução, mas entendeu que, com os limites da OMS observados e sem evidência científica de dano, não se justificava impor redução maior. A precaução exige <b>risco plausível</b> e deve respeitar a proporcionalidade.'},
+     {t:'Precaução deve ser aplicada com proporcionalidade. Sem indício científico sério, mantém-se o padrão legal, que pode ser revisto se surgirem novas evidências.',k:'ok',e:'Esse foi o entendimento do STF no <b>RE 627.189/SP</b>: a precaução não é um veto automático. Ela depende de uma ameaça razoável, e a decisão pode ser revista diante de novas evidências científicas.'},
+     {t:'Prevenção: o dano à saúde é comprovado.',k:'bad',e:'Não há dano comprovado abaixo dos limites adotados. Por isso o debate se dá no campo da <b>precaução</b>, e não da prevenção.'}]},
+ {ico:'soja',tag:'CASO C',t:'Semente transgênica',topic:'Caso C · Soja transgênica',d:'Uma empresa pede liberação comercial de uma soja geneticamente modificada. Estudos preliminares sugerem possível efeito sobre insetos polinizadores, mas os dados são inconclusivos.',
+  o:[{t:'Liberar: sem prova do dano, não se pode restringir a atividade econômica.',k:'bad',e:'Esse raciocínio inverte a lógica ambiental. Diante de incerteza e possível dano grave, a <span class="law">Lei 11.105/05, art. 1º</span> manda observar o princípio da precaução.'},
+     {t:'Precaução: condicionar a liberação a estudos complementares, a cargo da empresa, antes da decisão final.',k:'ok',e:'Correto. Há <b>incerteza científica</b> com ameaça plausível. A precaução autoriza exigir mais estudos e transferir ao empreendedor o dever de demonstrar a segurança (<span class="law">Lei 11.105/05, art. 1º</span> <span class="law">Princípio 15, Rio/92</span>).'},
+     {t:'Prevenção: exigir EIA para medir um dano já conhecido.',k:'warn',e:'Meio certo: exigir estudo é ótimo, e o EIA/RIMA serve aos <b>dois</b> princípios. O erro está no fundamento: o dano <b>não é conhecido</b>; é justamente a incerteza que chama a <b>precaução</b>.'}]}
+];
+const B1=[
+ {t:'Conceder a licença sem condicionantes: não há prova de dano.',k:'bad',e:'Esse é o erro que a precaução quer evitar. Pelo <span class="law">Princípio 15 da Rio/92</span>, a ausência de certeza científica não é razão para adiar medidas diante de ameaça de dano grave ou irreversível. A CF também manda o Poder Público controlar substâncias que comportem risco ao meio ambiente (<span class="law">art. 225, §1º, V</span>).'},
+ {t:'Negar a licença para sempre, sem possibilidade de revisão.',k:'warn',e:'Protege o ambiente, mas exagera. A precaução não significa proibição absoluta: as medidas devem ser <b>proporcionais</b> e “economicamente viáveis” (<span class="law">Princípio 15</span>). A decisão deve poder ser revista se surgirem novas evidências científicas.'},
+ {t:'Suspender a análise e condicionar a licença a estudos independentes custeados pela empresa, com zona de exclusão e monitoramento.',k:'ok',e:'Esta é a aplicação adequada da <b>precaução</b>: diante da dúvida razoável, adota-se medida proporcional e transfere-se ao empreendedor o dever de comprovar a segurança. Se a autoridade exigir essas medidas e a empresa as descumprir diante de risco de dano grave ou irreversível, pode haver crime (<span class="law">Lei 9.605/98, art. 54, §3º</span>).'}
+];
+const B2=[
+ {t:'Concordar: em processo, quem alega precisa provar.',k:'bad',e:'Em matéria ambiental, essa regra é flexibilizada. A <span class="law">Súmula 618 do STJ</span> admite a inversão do ônus da prova nas ações de degradação ambiental, e a precaução é um dos fundamentos dessa inversão.'},
+ {t:'Responder que, pela precaução, cabe a quem cria o risco provar que sua atividade é segura (Súmula 618/STJ).',k:'ok',e:'Correto. Quem cria o risco e lucra com ele tem o ônus de demonstrar a segurança da atividade. O STJ consolidou essa ideia na <span class="law">Súmula 618</span>: “A inversão do ônus da prova aplica-se às ações de degradação ambiental.”'},
+ {t:'Responder que a prevenção resolve: o dano já é conhecido.',k:'bad',e:'O enunciado do caso diz que <b>não há consenso científico</b>. Se o dano não é conhecido, o fundamento correto é a <b>precaução</b>, não a prevenção.'}
+];
+const VF=[
+ {q:'O princípio da precaução exige prova científica do dano para que o Poder Público possa agir.',a:false,topic:'Conceito de precaução',e:'Falso. É o contrário: a precaução atua justamente quando <b>não há</b> certeza científica (<span class="law">Princípio 15, Rio/92</span>).'},
+ {q:'Prevenção e precaução são princípios antecipatórios, pois ambos atuam antes da ocorrência do dano.',a:true,topic:'Natureza antecipatória',e:'Verdadeiro. Os dois agem antes do dano. A diferença está no <b>grau de certeza</b> sobre o risco.'},
+ {q:'A Lei de Biossegurança (Lei 11.105/2005) prevê expressamente a observância do princípio da precaução.',a:true,topic:'Fundamento legal da precaução',e:'Verdadeiro. O <span class="law">art. 1º da Lei 11.105/05</span> fala em “observância do princípio da precaução para a proteção do meio ambiente”. Mas a lei também dialoga com a <b>prevenção</b>: a CTNBio apoia o “processo de prevenção e investigação de acidentes” (<span class="law">art. 14, XVII</span>), e a CIBio estabelece “programas preventivos e de inspeção” (<span class="law">art. 18, II</span>).'},
+ {q:'O princípio da prevenção se aplica a riscos incertos e meramente hipotéticos.',a:false,topic:'Conceito de prevenção',e:'Falso. A prevenção trata de riscos <b>conhecidos e concretos</b>. Riscos incertos (mas plausíveis) são campo da precaução.'},
+ {q:'Segundo a Súmula 618 do STJ, a inversão do ônus da prova aplica-se às ações de degradação ambiental.',a:true,topic:'Efeitos processuais (Súmula 618)',e:'Verdadeiro. É o texto da <span class="law">Súmula 618 do STJ</span> (2018), que tem a precaução como um de seus fundamentos.'},
+ {q:'Pela precaução, qualquer risco imaginário, mesmo sem base científica plausível, autoriza proibir a atividade.',a:false,topic:'Precaução e proporcionalidade',e:'Falso. A precaução exige <b>ameaça plausível</b> de dano grave ou irreversível e deve ser proporcional. Foi o que o STF assentou no <span class="law">RE 627.189/SP</span>.'},
+ {q:'O EIA/RIMA é instrumento exclusivo do princípio da prevenção.',a:false,topic:'EIA/RIMA nos dois princípios',e:'Falso. O EIA/RIMA (<span class="law">CF, art. 225, §1º, IV</span>) serve aos <b>dois</b> princípios: avalia impactos conhecidos (prevenção) e permite identificar e dimensionar riscos ainda incertos (precaução).'},
+ {q:'A Política Nacional de Resíduos Sólidos prevê expressamente a prevenção e a precaução como princípios.',a:true,topic:'PNRS (Lei 12.305/10)',e:'Verdadeiro. <span class="law">Lei 12.305/2010, art. 6º, I</span>: “a prevenção e a precaução”.'}
+];
+
+/* =====================================================================
+   LOGO DO JOGO (pixel art, cores da faculdade)
+   ===================================================================== */
+function makeLogo(){
+  const N=32,c=document.createElement('canvas');c.width=N;c.height=N;const g=c.getContext('2d');
+  const P_=(x,y,col)=>{g.fillStyle=col;g.fillRect(x,y,1,1)};
+  const inS=(x,y,ins)=>{if(y<1+ins||y>30-ins)return false;let half=13-ins;if(y>18)half=Math.floor(13-ins-(y-18)*1.1);return x>=16-half-1&&x<=15+half+1&&half>=0};
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){if(inS(x,y,0))P_(x,y,'#000');if(inS(x,y,1))P_(x,y,'#D3221B');if(inS(x,y,3))P_(x,y,'#2A0706')}
+  for(let y=4;y<20;y++)for(let x=6;x<26;x++)if(inS(x,y,3)&&(x+y)%7===0)P_(x,y,'#3a0d0b');
+  const Wh='#ffffff',Gr='#cfcfcf';
+  P_(15,5,Wh);P_(16,5,Wh);P_(15,6,Wh);P_(16,6,Wh);
+  for(let y=7;y<21;y++){P_(15,y,Wh);P_(16,y,Gr)}
+  for(let x=7;x<25;x++)P_(x,8,Wh);
+  for(let x=12;x<20;x++){P_(x,21,Wh);P_(x,22,Gr)}
+  for(let y=9;y<14;y++){P_(7,y,Gr);P_(10,y,Gr);P_(21,y,Gr);P_(24,y,Gr)}
+  for(let x=5;x<13;x++)P_(x,14,Wh);for(let x=6;x<12;x++)P_(x,15,Gr);
+  for(let x=19;x<27;x++)P_(x,14,Wh);for(let x=20;x<26;x++)P_(x,15,Gr);
+  // folha (prevenção) no prato esquerdo
+  [[8,11],[9,11],[9,10],[10,10],[8,12],[9,12],[10,12],[7,12],[8,13],[9,13],[10,11]].forEach(([x,y])=>P_(x,y,'#ff4a3d'));P_(9,12,'#8E1310');
+  // interrogação (precaução) no prato direito
+  [[22,10],[23,10],[24,11],[23,12],[23,13]].forEach(([x,y])=>P_(x,y,'#ff4a3d'));
+  // estrela
+  [[16,25],[15,26],[16,26],[17,26],[16,27],[14,26],[18,26]].forEach(([x,y])=>P_(x,y,'#ffd166'));
+  const big=document.createElement('canvas');big.width=N*8;big.height=N*8;const bg=big.getContext('2d');bg.imageSmoothingEnabled=false;bg.drawImage(c,0,0,N*8,N*8);
+  return big.toDataURL('image/png');
+}
+const LOGO=makeLogo();
+document.querySelectorAll('[data-logo]').forEach(i=>i.src=LOGO);
+
+/* =====================================================================
+   SOM
+   ===================================================================== */
+let AC=null,muted=false;
+function beep(f,d,type='square',vol=.04,slide){if(muted)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.linearRampToValueAtTime(slide,t+d);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d)}catch(e){}}
+const seq=(notes,step=120,d=.16,type='square')=>notes.forEach((f,i)=>setTimeout(()=>beep(f,d,type),i*step));
+const sfx={jump:()=>beep(280,.14,'square',.03,620),ok:()=>{beep(660,.1);setTimeout(()=>beep(990,.16),100)},bad:()=>beep(220,.32,'sawtooth',.035,90),talk:()=>beep(540,.05,'square',.025),bump:()=>beep(380,.08),
+ win:()=>seq([523,659,784,1046]),hit:()=>beep(160,.2,'square',.05,60),catch:()=>beep(880,.08,'square',.03,1200),lane:()=>beep(440,.05,'triangle',.04),skid:()=>beep(300,.4,'sawtooth',.03,80),
+ turbo:()=>beep(200,.5,'sawtooth',.03,900),fanfare:()=>seq([523,523,523,659,784,659,784,1046],140,.2),thud:()=>{beep(90,.7,'sawtooth',.09,25);beep(60,.9,'square',.06,20)},sad:()=>seq([392,370,349,330],260,.3,'triangle')};
+let fscale=null;try{fscale=parseFloat(localStorage.getItem('ova_fs'))}catch(e){}
+if(fscale)document.documentElement.style.setProperty('--s',fscale);
+function fontStep(d){let cur=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--s'))||1.2;cur=Math.max(.9,Math.min(2,Math.round((cur+d*.15)*100)/100));document.documentElement.style.setProperty('--s',cur);try{localStorage.setItem('ova_fs',cur)}catch(e){}}
+function fullScreen(){const el=$('scrGame');try{if(document.fullscreenElement)document.exitFullscreen();else (el.requestFullscreen||el.webkitRequestFullscreen).call(el)}catch(e){toast('TELA CHEIA INDISPONÍVEL',true)}}
+function toggleMute(){muted=!muted;document.getElementById('mute').textContent=muted?'SOM OFF':'SOM ON'}
+
+/* =====================================================================
+   SPRITES
+   ===================================================================== */
+const BASE=["....hhhh....","...hhhhhh...","...hssssh...","...sesses...","...ssssss...","....smms....","...cccccc...","..cccaaccc..","..sccaaccs..","..sccccccs..","...cccccc...","...pppppp...","...pp..pp...","...pp..pp...","...bb..bb...","..bbb..bbb.."];
+const WALK=["...pp..pp...","..pp....pp..","..bb....bb..",".bbb....bbb."];
+function build(mods){const r=BASE.map(s=>s.split(''));if(mods)mods(r);return r.map(a=>a.join(''))}
+const longHair=r=>{for(let i=2;i<=6;i++){r[i][2]='h';r[i][9]='h'}};
+const robe=r=>{r[10]='..cccccccc..'.split('');r[11]='..cccccccc..'.split('')};
+const CH={
+ adv:{name:'Advogada',desc:'Argumenta com a lei na ponta da língua.',car:'#1f1f1f',pal:{h:'#2b1a10',s:'#8d5524',c:'#1f1f1f',a:'#ffffff',r:'#D3221B',p:'#1f1f1f',b:'#000000'},rows:build(r=>{longHair(r);r[8][5]='r';r[8][6]='r'})},
+ eco:{name:'Ambientalista',desc:'Conhece cada árvore da Mata Atlântica.',car:'#2f8f46',pal:{h:'#3b2a1a',s:'#f1c27d',c:'#2f8f46',a:'#c8f08f',p:'#8a7350',b:'#4a3020',t:'#8b5a2b'},rows:build(r=>{r[0]='...tttttt...'.split('');r[1]='.tttttttttt.'.split('')})},
+ est:{name:'Estudante',desc:'Moletom vermelho e muita vontade de passar.',car:'#D3221B',pal:{h:'#111111',s:'#c68642',c:'#D3221B',a:'#ffffff',p:'#2d4f7c',b:'#f5f5f5'},rows:build(r=>{r[0]='...hhhhhh...'.split('');r[1]='..hhhhhhhh..'.split('');r[2]='..hhsssshh..'.split('')})},
+ jui:{name:'Juíza',desc:'Toga, martelo e senso de justiça.',car:'#5a2a7a',pal:{h:'#bdbdbd',s:'#e0ac69',c:'#141414',a:'#f5f5f5',p:'#333333',b:'#000000'},rows:build(r=>{longHair(r);robe(r)})},
+ mPrev:{name:'Mestre da Prevenção',pal:{h:'#f0f0f0',s:'#d9a066',c:'#D3221B',a:'#ffd166',p:'#8E1310',b:'#3a1a0a'},rows:build(r=>{r[5]='...hhhhhh...'.split('');robe(r)})},
+ mPrec:{name:'Mestra da Precaução',pal:{h:'#5b3a29',s:'#7a4a2a',c:'#3a3a3a',a:'#cfcfcf',p:'#222222',b:'#111111'},rows:build(r=>{longHair(r);robe(r)})},
+ sci:{name:'Cientista',pal:{h:'#222222',s:'#c68642',c:'#f2f2f2',a:'#4aa3df',p:'#444444',b:'#222222'},rows:build(r=>{r[3]='...eeseee...'.split('')})},
+ guana:{name:'Guanabinha',special:true,desc:'Personagem especial: homenagem a Diogo Guanabara.',car:'#3b3b3b',pal:{h:'#3a2618',s:'#e8b896',c:'#3b3b3b',a:'#1e1e1e',p:'#23232e',b:'#111111',g:'#151515',w:'#d6e6ec',y:'#b3aea6',k:'#3a2a20',m:'#a0524a'},
+   rows:["....hhhh....","..hhhhhhhh..","..hssssssh..","..gggggggg..","..gweggewg..","..gggssggg..","..yssssssy..","..yykkkkyy..","...yymmyy...","..ccayyacc..",".sccccccccs.","..cccccccc..","...pppppp...","...pp..pp...","...bb..bb...","..bbb..bbb.."],
+   walk:["...pppppp...","..pp....pp..","..bb....bb..",".bbb....bbb."]},
+ bib:{name:'Bibliotecária',pal:{h:'#6b3a1a',s:'#f1c27d',c:'#8E1310',a:'#ffd166',p:'#2b2b2b',b:'#111111'},rows:build(r=>{r[0]='....hhhh....'.split('');r[3]='...eeseee...'.split('');robe(r)})}
+};
+const PALX={'.':null,e:'#1b1b1b',m:'#8a3b2e'};
+const cache={};
+function spr(key,frame){const id=key+frame;if(cache[id])return cache[id];
+  const c=document.createElement('canvas');c.width=12;c.height=16;const g=c.getContext('2d');
+  let rows=CH[key].rows.slice();if(frame===1){const wr=CH[key].walk||WALK;for(let i=0;i<4;i++)rows[12+i]=wr[i]}
+  rows.forEach((row,y)=>[...row].forEach((ch,x)=>{const col=ch in PALX?PALX[ch]:CH[key].pal[ch];if(col){g.fillStyle=col;g.fillRect(x,y,1,1)}}));
+  return cache[id]=c}
+function paintTo(canvas,key,frame=0){const g=canvas.getContext('2d');g.imageSmoothingEnabled=false;g.clearRect(0,0,canvas.width,canvas.height);g.drawImage(spr(key,frame),0,0,canvas.width,canvas.height)}
+
+/* =====================================================================
+   ESTADO GERAL
+   ===================================================================== */
+const W=320,H=180,GROUND=150,PW=24,PH=32;
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');ctx.imageSmoothingEnabled=false;
+let avatar=null,pname='JURISTA',score=0,maxScore=0,mistakes=[],L=0,level=null,ents=[],lv={},paused=true,t=0,cam=0,phaseStart=0,phaseMax=0,running=false;
+const P={x:30,y:GROUND-PH,vx:0,vy:0,face:1,onGround:true,anim:0,frame:0,stun:0};
+const keys={left:false,right:false,jump:false};
+let lastToast=0;
+const $=id=>document.getElementById(id);
+function show(id){['scrTitle','scrSelect','scrGame','scrEnd'].forEach(s=>$(s).classList.toggle('hidden',s!==id));window.scrollTo(0,0)}
+function toast(msg,force){const now=performance.now();if(!force&&now-lastToast<1200)return;lastToast=now;const el=$('toast');el.textContent=msg;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),1800)}
+function addScore(n,max){score+=n;maxScore+=max;$('hudScore').textContent='★ '+score}
+function quest(html){$('quest').innerHTML=html}
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+/* ---------- seleção ---------- */
+function toSelect(){sfx.talk();show('scrSelect');
+  const g=$('avgrid');if(g.children.length)return;
+  ['adv','eco','est','jui','guana'].forEach(k=>{const b=document.createElement('button');b.className='av'+(CH[k].special?' special':'');b.dataset.k=k;
+    b.innerHTML=`${CH[k].special?'<span class="badge">★ ESPECIAL</span>':''}<canvas width="12" height="16"></canvas><b>${CH[k].name.toUpperCase()}</b><small>${CH[k].desc}</small>`;
+    b.onclick=()=>{avatar=k;sfx.talk();[...g.children].forEach(x=>x.classList.toggle('sel',x===b));$('goBtn').disabled=false};g.appendChild(b)});
+  [...g.children].forEach(b=>paintTo(b.querySelector('canvas'),b.dataset.k,0));
+  let f=0;setInterval(()=>{f^=1;[...g.children].forEach(b=>paintTo(b.querySelector('canvas'),b.dataset.k,b.classList.contains('sel')?f:0))},260);
+}
+function startGame(){
+  pname=($('pname').value.trim()||'JURISTA').toUpperCase();
+  $('hudName').textContent=pname;paintTo($('hudAv'),avatar);
+  show('scrGame');score=0;maxScore=0;mistakes=[];$('hudScore').textContent='★ 0';
+  $('prog').innerHTML=LEVELS.map(()=>'<i></i>').join('');
+  startLevel(0);if(!running){running=true;requestAnimationFrame(loop)}
+}
+
+/* ---------- modal ---------- */
+function modal({title,portrait,html,buttons=[]}){
+  paused=true;keys.left=keys.right=keys.jump=false;
+  $('mtitle').innerHTML=title;const pc=$('mport');pc.style.display=portrait?'block':'none';if(portrait)paintTo(pc,portrait);
+  $('mbody').innerHTML=html;const bb=$('mbtns');bb.innerHTML='';
+  buttons.forEach(b=>{const e=document.createElement('button');e.className='pbtn'+(b.alt?' alt':'');e.innerHTML=b.label;e.onclick=b.fn;if(b.disabled)e.disabled=true;if(b.id)e.id=b.id;bb.appendChild(e)});
+  $('modal').classList.remove('hidden');document.querySelector('.mbox').scrollTop=0;
+}
+function closeModal(){$('modal').classList.add('hidden');paused=false}
+function fbBox(k,title,html){return `<div class="fb ${k}"><span class="v">${title}</span>${html}</div>`}
+function verdict(k){return k==='ok'?'✔ CORRETO!':k==='warn'?'◐ QUASE!':'✖ ERROU!'}
+function ask({title,portrait,intro,options,pts,topic,done}){
+  modal({title,portrait,html:intro+'<div id="opts"></div><div id="ofb"></div>'});
+  const box=$('opts');
+  options.forEach((o,i)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=`<span class="k">${'ABC'[i]})</span>${o.t}`;
+    b.onclick=()=>{box.querySelectorAll('.opt').forEach(x=>x.disabled=true);b.classList.add('sel');
+      const got=o.k==='ok'?pts:o.k==='warn'?pts/2:0;addScore(got,pts);
+      if(o.k!=='ok')mistakes.push({topic,e:options.find(x=>x.k==='ok').e});
+      o.k==='ok'?sfx.ok():sfx.bad();
+      $('ofb').innerHTML=fbBox(o.k,verdict(o.k)+(got?' +'+got:''),o.e);
+      const bb=$('mbtns');bb.innerHTML='';const c=document.createElement('button');c.className='pbtn';c.textContent='CONTINUAR ▶';c.onclick=()=>{closeModal();done&&done(o.k)};bb.appendChild(c);
+      setTimeout(()=>$('ofb').scrollIntoView({behavior:'smooth',block:'nearest'}),50)};
+    box.appendChild(b)});
+}
+function talk(key,pages,done){let i=0;
+  const render=()=>{sfx.talk();const pg=pages[i],last=i===pages.length-1;
+    modal({title:CH[key].name.toUpperCase(),portrait:key,html:pg.html,buttons:[{label:last?'ENTENDI ✔':'▶',id:'tbtn',disabled:!!pg.lock,fn:()=>{if(last){closeModal();done&&done()}else{i++;render()}}}]});
+    pg.after&&pg.after()};render()}
+
+/* =====================================================================
+   FASES
+   ===================================================================== */
+function ent(o){return Object.assign({w:24,h:32,used:false},o)}
+const flag=x=>ent({type:'flag',x,touch(e){if(e.used)return;e.used=true;completeLevel()}});
+const LEVELS=[
+/* 1 */ {title:'TRILHA DOS CONCEITOS',theme:'day',w:960,start:30,mode:'walk',
+  intro:'<p>Bem-vindo(a) à <b>Trilha dos Conceitos</b>!</p><p>Três mestres vão te ensinar a diferença entre <b>prevenção</b> e <b>precaução</b>. Encoste em cada um para conversar.</p><p>O portão só abre depois que você falar com os três.</p>',
+  setup(){lv={talked:0};
+    const mk=(key,x,pages)=>ents.push(ent({type:'npc',key,x,touch(e){if(e.used)return;talk(key,pages,()=>{e.used=true;lv.talked++;level.q();P.x=e.x-PW-6})}}));
+    ents.push(ent({type:'npc',key:'guana',x:96,touch(e){if(e.used)return;talk('guana',[
+      {html:'<p>E aí, '+pname+'! Eu sou o <b>Guanabinha</b> ⭐ e vou te acompanhar nesta missão.</p><p>Guarde a pergunta mais importante do jogo: <b>o risco é CONHECIDO ou INCERTO?</b></p>'},
+      {html:'<p>Se o risco é conhecido, pense em <b style="color:#D3221B">PREVENÇÃO</b>. Se há dúvida científica sobre um dano grave, pense em <b>PRECAUÇÃO</b>.</p><p>E não esqueça: o <b>EIA/RIMA</b> serve aos <b>dois</b>! Agora vá falar com os mestres. Bora! 🚀</p>'}],()=>{e.used=true;P.x=e.x-PW-6})}}));
+    mk('mPrev',190,[
+      {html:'<p>Eu sou o <b>Mestre da PREVENÇÃO</b>. Eu atuo quando o risco é <b>CONHECIDO</b>: a ciência já sabe qual dano a atividade causa e consegue medi-lo.</p>'},
+      {html:'<p>Minha missão é <b>evitar ou mitigar um dano previsível</b>.</p><p>Meus instrumentos: licenciamento ambiental, condicionantes, padrões de emissão e o EIA/RIMA.</p><p><b>Atenção:</b> o EIA/RIMA <b>não é exclusivo meu</b>! Ele também serve à <b>precaução</b>, porque ajuda a identificar e avaliar riscos ainda incertos.</p><p><span class="law">CF, art. 225, §1º, IV</span> <span class="law">Lei 6.938/81, arts. 9º e 10</span></p>'},
+      {html:'<p><b>Exemplo:</b> exigir filtro na chaminé de uma fábrica cuja emissão poluente já é comprovada.</p><blockquote>Minha frase: <b>“Eu sei o que vai acontecer.”</b></blockquote><p><b>Cuidado:</b> eu atuo <b>antes</b> do dano. Se o dano <b>já ocorreu</b>, quem entra é o princípio do <b>poluidor-pagador</b>: o poluidor responde pela recuperação e indenização (<span class="law">Lei 6.938/81, art. 4º, VII</span>).</p>'}]);
+    mk('mPrec',400,[
+      {html:'<p>Sou a <b>Mestra da PRECAUÇÃO</b>. Eu atuo quando há <b>INCERTEZA CIENTÍFICA</b>, mas existe ameaça plausível de dano <b>grave ou irreversível</b>.</p>'},
+      {html:'<blockquote><b>Declaração do Rio (1992), Princípio 15:</b> “Quando houver ameaça de danos graves ou irreversíveis, a ausência de certeza científica absoluta não será utilizada como razão para o adiamento de medidas economicamente viáveis para prevenir a degradação ambiental.”</blockquote>'},
+      {html:'<p>Na dúvida, decide-se a favor do meio ambiente: <i>in dubio pro natura</i>.</p><p>O <b>EIA/RIMA</b> também é meu instrumento: diante da dúvida, posso exigir estudos mais aprofundados antes de qualquer licença.</p><p>Posso até inverter o ônus da prova: quem cria o risco tem de provar que a atividade é segura (<span class="law">Súmula 618/STJ</span>).</p><p><span class="law">Lei 11.105/05, art. 1º</span> <span class="law">Lei 9.605/98, art. 54, §3º</span></p><p><small>Obs.: a Lei 11.105/05 cita a precaução no art. 1º, mas também tem regras de <b>prevenção</b> (arts. 14, XVII e 18, II).</small></p><blockquote>Minha frase: <b>“Eu não sei, mas pode ser grave.”</b></blockquote>'}]);
+    mk('sci',610,[
+      {html:'<p>Sou a <b>Cientista</b>. Os dois princípios agem <b>ANTES</b> do dano. O que os separa é o <b>grau de certeza científica</b> sobre o risco.</p><p>Arraste o termômetro para ver:</p><div class="thermo"><input type="range" min="0" max="100" value="50" id="th"><div class="sc"><span>nenhuma evidência</span><span>dúvida</span><span>dano comprovado</span></div><div class="out" id="tho"></div></div>',lock:true,
+       after(){const th=$('th'),o=$('tho');const up=v=>{v=+v;
+         o.innerHTML=v<15?'<span class="tag" style="background:#777">NENHUM PRINCÍPIO</span><br>Risco meramente imaginário. Sem <b>nenhuma</b> base científica plausível, nem a precaução se aplica: ela exige ameaça razoável de dano grave ou irreversível. Agir sem base viola a proporcionalidade.'
+         :v<70?'<span class="tag" style="background:#3a3a3a">PRECAUÇÃO</span><br>Dúvida científica razoável. Há indícios sérios de dano grave, mas a ciência ainda não confirmou. A falta de certeza <b>não</b> autoriza esperar: pode-se exigir estudos (inclusive EIA/RIMA), impor restrições ou suspender a atividade.'
+         :'<span class="tag" style="background:#D3221B">PREVENÇÃO</span><br>Dano conhecido e comprovado. A ciência já sabe o impacto e consegue medi-lo. Cabe exigir medidas para evitá-lo ou mitigá-lo: licenciamento, condicionantes, EIA/RIMA. Lembre: o EIA/RIMA serve aos <b>dois</b> princípios.'};
+         up(50);th.oninput=()=>{up(th.value);$('tbtn').disabled=false}}},
+      {html:'<p>Uma dica extra: os dois princípios também aparecem <b>juntos</b> em leis brasileiras.</p><p>A Política Nacional sobre Mudança do Clima (<span class="law">Lei 12.187/2009, art. 3º</span>) e a Política Nacional de Resíduos Sólidos (<span class="law">Lei 12.305/2010, art. 6º, I</span>) citam expressamente a <b>prevenção</b> e a <b>precaução</b>.</p><p>Guarde isso: vai cair mais adiante! 😉</p>'}]);
+    ents.push(ent({type:'gate',x:770,w:10,h:56,solid(){return lv.talked<3},bump(){toast('FALE COM OS 3 MESTRES!')}}));
+    ents.push(flag(890));
+  },
+  q(){quest(`<b>MISSÃO</b> Fale com os 3 mestres (${lv.talked}/3) e chegue à bandeira. <small>Encoste neles para conversar.</small>`)}},
+
+/* 2 */ {title:'SALA DAS PORTAS',theme:'hall',w:320,start:148,mode:'walk',
+  intro:'<p>Você chegou à <b>Sala das Portas</b>.</p><p>Uma situação vai aparecer no topo da tela. Caminhe até a porta do princípio correto: <b style="color:#D3221B">PREVENÇÃO</b> à esquerda ou <b>PRECAUÇÃO</b> à direita.</p><p>São 6 situações.</p>',
+  setup(){lv={i:0};const door=(k,x)=>ents.push(ent({type:'door',k,x,w:44,h:60,touch(){answerDoor(k)}}));door('prev',24);door('prec',252)},
+  q(){quest(`<b>SITUAÇÃO ${lv.i+1}/6</b> ${CL[lv.i].q}`)}},
+
+/* 3 */ {title:'CHUVA DE PRINCÍPIOS',theme:'day',w:320,start:148,mode:'catch',
+  intro:'<p>Está chovendo <b>conceitos</b>! ☔</p><p>Mova-se para a esquerda e para a direita e <b>pegue só as palavras do princípio pedido</b>. Desvie das outras.</p><p>Rodada 1: <b style="color:#D3221B">PREVENÇÃO</b>. Rodada 2: <b>PRECAUÇÃO</b>.</p><p>Dica: tem palavra que serve para os <b>dois</b> princípios… 😉</p>',
+  setup(){lv={round:0,items:[],queue:[],timer:60,n:0};prepRound()},
+  q(){const tg=lv.round===0?'PREVENÇÃO':'PRECAUÇÃO';quest(`<b>RODADA ${lv.round+1}/2</b> Pegue só o que é <b style="font-size:calc((12px)*var(--s));color:${lv.round===0?'#D3221B':'#111'}">${tg}</b>. <small>Desvie do resto.</small>`)},
+  update:updateCatch,draw:drawCatch},
+
+/* 4 */ {title:'CORRIDA MALUCA',theme:'race',w:320,mode:'race',
+  intro:'<p>🏁 <b>CORRIDA MALUCA!</b> Você vai disputar com o caminhão da <b>AgroNova</b> e o carro do <b>Sr. Poluidor</b>.</p><p>A cada pergunta, um <b>pórtico</b> com as respostas <b>A</b>, <b>B</b> e <b>C</b> vem pela pista. <b>Troque de faixa</b> e passe pela resposta certa.</p><p>Acertou: <b>TURBO</b>! Errou: o motor engasga. Cuidado com as <b>manchas de óleo</b>!</p><p>Teclado: ↑ ↓ (ou W S). Celular: botões ▲ ▼.</p>',
+  setup(){lv={lane:1,carY:105-7,qi:0,scroll:0,state:'wait',wait:40,gate:null,obs:[],turbo:0,slow:0,spin:0,me:0,correct:0,
+     rivals:[{name:'AGRONOVA',p:150,v:2.5,col:'#6b6b6b',acc:'#ffd166',truck:true},{name:'POLUIDOR',p:70,v:2.45,col:'#5a3a1a',acc:'#111'}]}},
+  q(){if(lv.qi>=RACE.length)return;const r=RACE[lv.qi],cols=['#D3221B','#3a3a3a','#1f5fa8'];quest(`<b>PERGUNTA ${lv.qi+1}/${RACE.length}</b> ${r.q}`+r.o.map((o,i)=>`<span class="qo"><span style="background:${cols[i]}">${'ABC'[i]}</span>${o}</span>`).join(''))},
+  update:updateRace,draw:drawRace,
+  onKey(k){if(k==='jump'||k==='up')laneMove(-1);if(k==='down')laneMove(1)},
+  onPad(k){if(k==='left')laneMove(-1);if(k==='right')laneMove(1)}},
+
+/* 5 */ {title:'BIBLIOTECA DAS LEIS',theme:'library',w:640,start:30,mode:'walk',
+  intro:'<p>Na <b>Biblioteca das Leis</b>, cada princípio tem seu fundamento.</p><p>Fale com a <b>Bibliotecária</b> e jogue o <b>jogo da memória</b>: ligue cada norma ao seu conteúdo. Quanto menos erros, mais pontos.</p>',
+  setup(){lv={done:false};
+    ents.push(ent({type:'npc',key:'bib',x:290,touch(e){if(e.used)return;openMemory(()=>{e.used=true;lv.done=true;level.q();P.x=e.x-PW-6})}}));
+    ents.push(ent({type:'gate',x:520,w:10,h:56,solid(){return!lv.done},bump(){toast('FALE COM A BIBLIOTECÁRIA!')}}));
+    ents.push(flag(590))},
+  q(){quest(`<b>MISSÃO</b> ${lv.done?'Memória concluída! Siga até a bandeira.':'Fale com a Bibliotecária e complete o jogo da memória.'}`)}},
+
+/* 6 */ {title:'ESTRADA DOS CASOS',theme:'day2',w:1000,start:30,mode:'walk',
+  intro:'<p>Na <b>Estrada dos Casos</b> você vai aplicar o Direito.</p><p>Encoste em cada placa para abrir um caso concreto e decidir qual princípio se aplica e que medida tomar. Resolva os 3 para liberar a bandeira.</p>',
+  setup(){lv={done:0};
+    CS.forEach((c,i)=>ents.push(ent({type:'station',ico:c.ico,tag:c.tag,x:220+i*260,w:36,h:58,touch(e){if(e.used)return;
+      ask({title:c.tag+' · '+c.t.toUpperCase(),intro:`<p>${c.d}</p><p><b>Qual a decisão juridicamente correta?</b></p>`,options:c.o,pts:20,topic:c.topic,done:()=>{e.used=true;lv.done++;level.q()}})}})));
+    ents.push(ent({type:'gate',x:880,w:10,h:56,solid(){return lv.done<3},bump(){toast('RESOLVA OS 3 CASOS!')}}));
+    ents.push(flag(940))},
+  q(){quest(`<b>MISSÃO</b> Resolva os casos (${lv.done}/3) e chegue à bandeira. <small>Encoste nas placas.</small>`)}},
+
+/* 7 */ {title:'CHEFÃO AGRONOVA',theme:'night',w:320,start:24,mode:'walk',
+  intro:'<p>Cuidado! A <b>AgroNova S.A.</b> quer pulverizar um <b>defensivo agrícola de nova formulação</b> ao lado de uma área de apicultura familiar em Mata de São João (BA).</p><p>Você é o(a) <b>analista ambiental</b>. Cada decisão correta tira vida do chefão. Caminhe até a fábrica para começar o duelo.</p>',
+  setup(){lv={hp:100};ents.push(ent({type:'boss',x:200,w:110,h:70,touch(e){if(e.used)return;e.used=true;bossFight()}}))},
+  q(){quest(`<b>CHEFÃO</b> Enfrente a AgroNova S.A. <small>Caminhe até a fábrica.</small>`)}},
+
+/* 8 */ {title:'DESAFIO FINAL',theme:'arena',w:320,start:148,mode:'walk',
+  intro:`<p>Último desafio: <b>Verdadeiro ou Falso</b>!</p><p>Leia a afirmação no topo e <b>pule</b> para bater no bloco <b>V</b> (verdadeiro) ou <b>F</b> (falso). São ${VF.length} afirmações.</p><p>No final: <b>🏆 troféu</b> para quem mandar bem… ou <b>🪨 uma pedra</b> para quem precisa estudar mais!</p>`,
+  setup(){lv={i:0};const blk=(k,x)=>ents.push(ent({type:'block',k,x,y:70,w:22,h:22,bumpT:0,hit(e){e.bumpT=10;answerVF(k)}}));blk(true,80);blk(false,218)},
+  q(){quest(`<b>AFIRMAÇÃO ${lv.i+1}/${VF.length}</b> ${VF[lv.i].q} <small>Pule no bloco V ou F.</small>`)}}
+];
+
+function setPad(mode){
+  const L_=$('padL'),R_=$('padR'),J=$('padJ');
+  if(mode==='race'){L_.textContent='▲';R_.textContent='▼';J.style.visibility='hidden';$('hint').textContent='↑ ↓ ou W S para trocar de faixa';}
+  else if(mode==='catch'){L_.textContent='◀';R_.textContent='▶';J.style.visibility='hidden';$('hint').textContent='← → ou A D para mover';}
+  else{L_.textContent='◀';R_.textContent='▶';J.style.visibility='visible';$('hint').textContent='← → ou A D para andar · ↑ ou ESPAÇO para pular · Encoste nos personagens e objetos para interagir';}
+}
+function startLevel(i){
+  L=i;level=LEVELS[i];ents=[];level.setup();resetPlayer(level.start||148);phaseStart=score;phaseMax=maxScore;
+  $('hudPhase').textContent=`FASE ${i+1}/${LEVELS.length} · ${level.title}`;level.q();setPad(level.mode);
+  [...$('prog').children].forEach((el,j)=>el.className=j<i?'d':j===i?'c':'');
+  modal({title:`FASE ${i+1} · ${level.title}`,portrait:'guana',html:'<p style="color:#8E1310;font-family:VT323,monospace"><b>Guanabinha diz:</b></p>'+level.intro,buttons:[{label:'VAMOS ▶',fn:()=>{closeModal();sfx.talk()}}]});
+}
+function resetPlayer(x){P.x=x;P.y=GROUND-PH;P.vx=0;P.vy=0;P.onGround=true;P.face=1;P.stun=0}
+function completeLevel(extra=''){
+  sfx.win();const got=score-phaseStart,max=maxScore-phaseMax;
+  const r=max?got/max:1,st=r>=.9?3:r>=.6?2:1,last=L===LEVELS.length-1;
+  modal({title:`FASE ${L+1} COMPLETA!`,portrait:avatar,html:`<div class="stars">${'★'.repeat(st)}<span style="color:#ccc">${'★'.repeat(3-st)}</span></div><div class="big">${max?'+'+got+' / '+max:'✔'}</div>${extra}<p style="text-align:center">${last?'Você terminou a missão! Hora da verdade…':'Próxima: <b>'+LEVELS[L+1].title+'</b>'}</p>`,
+    buttons:[{label:last?'VER RESULTADO ▶':'PRÓXIMA FASE ▶',fn:()=>{closeModal();last?showEnd():startLevel(L+1)}}]});
+}
+function answerDoor(k){
+  const c=CL[lv.i],ok=k===c.a;addScore(ok?10:0,10);ok?sfx.ok():sfx.bad();if(!ok)mistakes.push({topic:c.topic,e:c.e});
+  const lab={prev:'PREVENÇÃO',prec:'PRECAUÇÃO'};
+  modal({title:ok?'✔ PORTA CERTA! +10':'✖ PORTA ERRADA!',portrait:avatar,html:fbBox(ok?'ok':'bad','RESPOSTA: '+lab[c.a],c.e),buttons:[{label:'CONTINUAR ▶',fn:()=>{closeModal();resetPlayer(148);lv.i++;if(lv.i>=CL.length)completeLevel();else level.q()}}]});
+}
+function answerVF(v){
+  const c=VF[lv.i],ok=v===c.a;addScore(ok?10:0,10);ok?sfx.ok():sfx.bad();if(!ok)mistakes.push({topic:c.topic,e:c.e});
+  modal({title:ok?'✔ ACERTOU! +10':'✖ ERROU!',portrait:avatar,html:`<p><i>“${c.q}”</i></p>`+fbBox(ok?'ok':'bad',c.a?'VERDADEIRO':'FALSO',c.e),buttons:[{label:'CONTINUAR ▶',fn:()=>{closeModal();resetPlayer(148);lv.i++;if(lv.i>=VF.length)completeLevel();else level.q()}}]});
+}
+function bossFight(){
+  const dmg=k=>{const d=k==='ok'?50:k==='warn'?25:0;lv.hp=Math.max(0,lv.hp-d);if(d)sfx.hit()};
+  ask({title:'DECISÃO 1 · O PEDIDO',portrait:avatar,intro:'<p>Dois estudos independentes apontam possível <b>mortandade de abelhas</b> e efeito cumulativo no lençol freático. Outros dois estudos, financiados pela empresa, não encontram efeito. <b>Não há consenso científico.</b></p><p><b>O que você faz com o pedido de licença?</b></p>',options:B1,pts:20,topic:'Chefão · licença com dúvida científica',
+   done(k){dmg(k);setTimeout(()=>ask({title:'DECISÃO 2 · A EMPRESA RECORRE',portrait:avatar,intro:'<p>A AgroNova argumenta: <i>“Ninguém provou que o produto causa dano. O ônus da prova é de quem acusa.”</i></p><p><b>Como você responde?</b></p>',options:B2,pts:20,topic:'Chefão · ônus da prova (Súmula 618)',
+     done(k2){dmg(k2);setTimeout(()=>{const win=lv.hp===0;
+       modal({title:win?'CHEFÃO DERROTADO!':'A AGRONOVA RECUOU…',portrait:avatar,html:win?'<p>Você aplicou a <b>precaução</b> com proporcionalidade e inverteu o ônus da prova. A licença ficou condicionada a estudos independentes, e as abelhas estão a salvo! 🐝</p>':`<p>A empresa ainda tem <b>${lv.hp}%</b> de força. Releia os feedbacks: diante da dúvida científica sobre dano grave, a <b>precaução</b> autoriza medidas proporcionais e transfere a quem cria o risco o dever de provar a segurança.</p>`,buttons:[{label:'CONTINUAR ▶',fn:()=>{closeModal();completeLevel()}}]})},700)}}),700)}});
+}
+
+/* ---------- MEMÓRIA ---------- */
+function openMemory(done){
+  const cards=shuffle(MEM.flatMap((p,i)=>[{id:i,txt:p[0],law:true},{id:i,txt:p[1]}]));
+  let open=[],found=0,miss=0,lock=false;
+  modal({title:'JOGO DA MEMÓRIA',portrait:'bib',html:'<p>Vire duas cartas por vez e ligue cada <b style="background:#111;color:#ffd166;padding:0 4px">NORMA</b> ao seu <b>CONTEÚDO</b>.</p><div class="mem" id="mem"></div><div class="memstat"><span id="mFound">PARES 0/6</span><span id="mMiss">ERROS 0</span></div>'});
+  const g=$('mem');
+  cards.forEach((c,i)=>{const b=document.createElement('button');b.className='card back';b.textContent='?';
+    b.onclick=()=>{if(lock||b.classList.contains('done')||open.includes(i))return;sfx.talk();
+      b.className='card '+(c.law?'law2':'open');b.textContent=c.txt;open.push(i);
+      if(open.length===2){const[a,d]=open,A=g.children[a],D=g.children[d];
+        if(cards[a].id===cards[d].id&&a!==d){sfx.ok();A.className=D.className='card done';found++;open=[];$('mFound').textContent=`PARES ${found}/6`;
+          if(found===6)finish()}
+        else{sfx.bad();miss++;$('mMiss').textContent='ERROS '+miss;lock=true;A.classList.add('wrong');D.classList.add('wrong');
+          setTimeout(()=>{[A,D].forEach(x=>{x.className='card back';x.textContent='?'});open=[];lock=false},1100)}}};
+    g.appendChild(b)});
+  function finish(){const got=Math.max(6,30-2*miss);addScore(got,30);
+    if(miss>=6)mistakes.push({topic:'Fundamentos legais (memória)',e:MEM.map(p=>`<span class="law">${p[0]}</span> → ${p[1]}`).join('<br>')});
+    setTimeout(()=>{const bb=$('mbtns');bb.innerHTML='';
+      $('mbody').insertAdjacentHTML('beforeend',fbBox(miss<=3?'ok':'warn',`MEMÓRIA COMPLETA! +${got}`,`Você errou ${miss} vez(es). Esses fundamentos costumam cair em prova!`));
+      const c=document.createElement('button');c.className='pbtn';c.textContent='CONTINUAR ▶';c.onclick=()=>{closeModal();done()};bb.appendChild(c);
+      document.querySelector('.mbox').scrollTop=9999},500)}
+}
+
+/* ---------- CHUVA (catch) ---------- */
+function prepRound(){const tg=lv.round===0?'prev':'prec';lv.target=tg;lv.queue=shuffle(DROPS);lv.items=[];lv.timer=70;lv.n=0;lv.maxR=DROPS.filter(d=>d.k===tg||d.k==='both').length*2}
+function updateCatch(dt){
+  if(lv.over)return;
+  const ax=(keys.right?1:0)-(keys.left?1:0);
+  if(P.stun>0){P.stun-=dt}else{P.x+=ax*2.4*dt;if(ax){P.face=ax;P.anim+=dt;if(P.anim>7){P.anim=0;P.frame^=1}}else P.frame=0}
+  P.x=Math.max(0,Math.min(W-PW,P.x));
+  lv.timer-=dt;
+  if(lv.timer<=0&&lv.queue.length){const d=lv.queue.shift();ctx.font='10px "Press Start 2P",monospace';const w=Math.ceil(ctx.measureText(d.l).width)+10;
+    lv.items.push({...d,w,x:6+Math.random()*(W-w-12),y:-14,v:.55+lv.n*.025});lv.n++;lv.timer=82-lv.n*1.5}
+  for(const it of lv.items){it.y+=it.v*dt;
+    const top=P.y-6;if(!it.gone&&it.y+14>=top&&it.y+14<=top+10&&it.x<P.x+PW+6&&it.x+it.w>P.x-6){it.gone=true;
+      if(it.k===lv.target||it.k==='both'){addScore(2,0);sfx.catch();toast(it.k==='both'?'+2 · '+it.l+' VALE PARA OS DOIS!':'+2 · '+it.l,true);it.fx='ok'}
+      else{sfx.bad();P.stun=30;toast('✖ '+it.e,true);mistakes.push({topic:'Chuva: '+it.l,e:it.e});it.fx='bad'}}
+    if(it.y>GROUND)it.gone=true}
+  lv.items=lv.items.filter(i=>!i.gone||(i.fx&&(i.fxT=(i.fxT||0)+dt)<20));
+  if(!lv.queue.length&&!lv.items.some(i=>!i.gone)){
+    maxScore+=lv.maxR;
+    if(lv.round===0){lv.round=1;modal({title:'RODADA 1 CONCLUÍDA!',portrait:avatar,html:'<p>Agora o desafio muda: pegue só o que é <b>PRECAUÇÃO</b>!</p><p>Lembre: incerteza científica, Princípio 15, <i>in dubio pro natura</i>, inversão do ônus…</p>',buttons:[{label:'RODADA 2 ▶',fn:()=>{closeModal();prepRound();level.q()}}]})}
+    else{lv.over=true;lv.items=[];completeLevel()}
+  }
+}
+function drawCatch(){
+  cam=0;drawBG();
+  // nuvens
+  for(let i=0;i<4;i++){const x=((i*97+t*.2)%380)-40;R(x,14+i*9,34,8,'#fff');R(x+6,10+i*9,20,6,'#fff')}
+  txt('PEGUE: '+(lv.target==='prev'?'PREVENÇÃO':'PRECAUÇÃO'),W/2,GROUND+12,lv.target==='prev'?'#ff6b5e':'#fff',8);
+  for(const it of lv.items){if(it.gone&&!it.fx)continue;const y=Math.round(it.y);
+    if(it.fx){txt(it.fx==='ok'?'+2':'✖',it.x+it.w/2,y-(it.fxT||0),it.fx==='ok'?'#3fbf6a':'#ff5a4e',8);continue}
+    R(it.x,y,it.w,16,'#000');R(it.x+1,y+1,it.w-2,14,'#fff4e8');R(it.x+1,y+1,it.w-2,2,'#fff');
+    ctx.font='10px "Press Start 2P",monospace';ctx.textAlign='center';ctx.textBaseline='top';ctx.fillStyle='#111';ctx.fillText(it.l,Math.round(it.x+it.w/2),y+4);
+    R(it.x+it.w/2-1,y-4,2,4,'#bbb')}
+  drawPlayer(P.stun>0&&Math.floor(t/3)%2);
+  // cesta
+  const sx=P.x;R(sx-6,P.y-6,36,8,'#000');R(sx-5,P.y-5,34,6,'#8b5a2b');for(let i=0;i<5;i++)R(sx-3+i*7,P.y-5,2,6,'#6b3e1a');
+}
+
+/* ---------- CORRIDA ---------- */
+const LANES=[72,105,138];
+function laneMove(d){if(paused||lv.spin>0)return;const n=Math.max(0,Math.min(2,lv.lane+d));if(n!==lv.lane){lv.lane=n;sfx.lane()}}
+function askRace(){const r=RACE[lv.qi];level.q();
+  modal({title:`PERGUNTA ${lv.qi+1}/${RACE.length}`,portrait:avatar,html:`<p><b>${r.q}</b></p><div class="qlist">`+r.o.map((o,i)=>`<div class="opt"><span class="k">${'ABC'[i]})</span>${o}</div>`).join('')+'</div><p><small>O pórtico vai chegar: troque para a faixa da resposta certa!</small></p>',
+   buttons:[{label:'ACELERAR 🏁',fn:()=>{closeModal();lv.state='drive';lv.gate={x:W+230,done:false};
+     const used=new Set();[W+70,W+150].forEach(x=>{let ln;do{ln=Math.floor(Math.random()*3)}while(used.has(ln));used.add(ln);lv.obs.push({x,lane:ln})})}}]})}
+function judgeRace(){
+  const r=RACE[lv.qi],ok=lv.lane===r.a;addScore(ok?10:0,10);
+  if(ok){lv.turbo=130;lv.correct++;sfx.turbo()}else{lv.slow=130;sfx.bad();mistakes.push({topic:r.topic,e:r.e})}
+  setTimeout(()=>modal({title:ok?'✔ TURBO! +10':'✖ MOTOR ENGASGOU!',portrait:avatar,html:fbBox(ok?'ok':'bad','RESPOSTA: '+'ABC'[r.a]+') '+r.o[r.a],r.e),buttons:[{label:'CONTINUAR ▶',fn:()=>{closeModal();lv.qi++;
+    if(lv.qi>=RACE.length){lv.state='finish';lv.finishT=150}else{lv.state='wait';lv.wait=70}}}]}),350);
+}
+function raceRank(){const all=[lv.me,...lv.rivals.map(r=>r.p)].sort((a,b)=>b-a);return all.indexOf(lv.me)+1}
+function updateRace(dt){
+  if(lv.state==='wait'){lv.wait-=dt;if(lv.wait<=0&&lv.qi<RACE.length){lv.state='ask';askRace()}}
+  let sp=2.4;if(lv.turbo>0){sp*=1.9;lv.turbo-=dt}if(lv.slow>0){sp*=.45;lv.slow-=dt}if(lv.spin>0){sp*=.35;lv.spin-=dt}
+  lv.scroll+=sp*dt;lv.me+=sp*dt;lv.rivals.forEach(r=>r.p+=r.v*dt);
+  const ty=LANES[lv.lane]-7;lv.carY+=(ty-lv.carY)*.25*dt;
+  for(const o of lv.obs){o.x-=sp*dt;if(!o.hit&&o.lane===lv.lane&&Math.abs(o.x-56)<20&&lv.spin<=0&&lv.turbo<=0){o.hit=true;lv.spin=55;sfx.skid();toast('ÓLEO NA PISTA! 🛢',true)}}
+  lv.obs=lv.obs.filter(o=>o.x>-40);
+  if(lv.gate){lv.gate.x-=sp*dt;if(!lv.gate.done&&lv.gate.x<62){lv.gate.done=true;judgeRace()}if(lv.gate.x<-30)lv.gate=null}
+  if(lv.state==='finish'){lv.finishT-=dt;if(lv.finishT<=0){lv.state='done';const rk=raceRank();
+    if(rk===1)sfx.fanfare();
+    completeLevel(`<p style="text-align:center;font-family:'Press Start 2P',monospace;font-size:calc((14px)*var(--s))">${rk===1?'🥇 1º LUGAR!':rk===2?'🥈 2º LUGAR':'🥉 3º LUGAR'}</p><p style="text-align:center">${lv.correct}/${RACE.length} respostas certas na pista.</p>`)}}
+}
+function drawCar(x,y,body,acc,truck,label){
+  x=Math.round(x);y=Math.round(y);
+  if(truck){R(x-12,y-2,30,18,'#000');R(x-11,y-1,28,16,'#9a9a9a');R(x-9,y+3,24,2,acc);R(x+18,y,14,14,'#000');R(x+19,y+1,12,12,body);R(x+25,y+3,5,8,'#9fd3ff');}
+  else{R(x,y,30,14,'#000');R(x+1,y+1,28,12,body);R(x+18,y+3,6,8,'#9fd3ff');R(x+3,y+6,12,2,acc);R(x+26,y+2,3,3,'#fff4b0');R(x+26,y+9,3,3,'#fff4b0')}
+  [[x+3,y-2],[x+21,y-2],[x+3,y+13],[x+21,y+13]].forEach(([a,b])=>R(a,b,6,3,'#111'));
+  if(label)txt(label,x+15,y-12,'#fff',8);
+}
+function drawRace(){
+  const s=lv.scroll;
+  R(0,0,W,22,'#f6c9c0');R(0,22,W,20,'#f9ddd5');
+  for(let i=0;i<14;i++){const bx=((i*37-s*.2)%(W+40)+W+40)%(W+40)-30,bh=10+(i*13%18);R(bx,42-bh,26,bh,'#d9a7a0');R(bx+4,44-bh,3,3,'#fdf0eb');R(bx+14,48-bh,3,3,'#fdf0eb')}
+  R(0,42,W,14,'#4f9e45');
+  for(let x=-(s%40);x<W;x+=40){R(x+6,44,8,8,'#2f7a3a');R(x+9,52,2,4,'#5a3a1a')}
+  R(0,56,W,100,'#3a3a3a');
+  for(let x=-(s%32);x<W;x+=32){R(x,53,16,3,'#D3221B');R(x+16,53,16,3,'#fff');R(x,156,16,3,'#fff');R(x+16,156,16,3,'#D3221B')}
+  R(0,159,W,21,'#4f9e45');for(let x=-(s*1%50);x<W;x+=50)R(x+20,166,10,6,'#2f7a3a');
+  for(let x=-(s%24);x<W;x+=24){R(x,88,12,2,'#e8d27a');R(x,121,12,2,'#e8d27a')}
+  // óleo
+  for(const o of lv.obs){const y=LANES[o.lane];R(o.x,y-5,22,10,'#0b0b0b');R(o.x+3,y-7,14,14,'#0b0b0b');R(o.x+6,y-4,5,2,'#5a5aa0');R(o.x+13,y+1,3,2,'#a05a9a')}
+  // pórtico
+  if(lv.gate){const gx=Math.round(lv.gate.x),cols=['#D3221B','#3a3a3a','#1f5fa8'];
+    R(gx-2,48,4,112,'#ddd');R(gx+14,48,4,112,'#ddd');R(gx-4,46,24,4,'#ddd');
+    LANES.forEach((ly,i)=>{R(gx+2,ly-15,12,30,'#000');R(gx+3,ly-14,10,28,cols[i]);txt('ABC'[i],gx+8,ly-4,'#fff',8)})}
+  // rivais
+  lv.rivals.forEach((r,i)=>{const dx=(r.p-lv.me)*.6,x=56+dx;const ly=i===0?LANES[0]-7:LANES[2]-7;
+    if(x>-40&&x<W+10)drawCar(x,ly,r.col,r.acc,r.truck,r.name);else txt((dx>0?'▶ ':'◀ ')+r.name,dx>0?W-50:50,ly+2,'#fff',8)});
+  // seu carro
+  ctx.save();const cx=56+15,cy=lv.carY+7;ctx.translate(cx,cy);if(lv.spin>0)ctx.rotate(lv.spin/55*Math.PI*4);ctx.translate(-cx,-cy);
+  drawCar(56,lv.carY,CH[avatar].car,'#fff',false,null);
+  ctx.drawImage(spr(avatar,0),2,0,8,7,62,Math.round(lv.carY)+3,8,7);
+  ctx.restore();
+  txt(pname.slice(0,8),71,lv.carY-12,'#ffd166',8);
+  if(lv.turbo>0){for(let i=0;i<3;i++)R(44-i*6-(t%4),lv.carY+3+i*3,6,3,i%2?'#ffd166':'#ff6b3a');for(let i=0;i<6;i++)R((i*53+t*7)%W,60+(i*29)%90,14,1,'rgba(255,255,255,.5)')}
+  if(lv.slow>0&&Math.floor(t/6)%2)R(40,lv.carY+4,6,6,'#777');
+  // HUD
+  R(0,0,124,16,'rgba(0,0,0,.7)');txt('POSIÇÃO: '+raceRank()+'º',4,3,'#ffd166',8,'left');
+  R(W-80,0,80,16,'rgba(0,0,0,.7)');txt(Math.min(lv.qi+1,RACE.length)+'/'+RACE.length,W-40,3,'#fff',8);
+  if(lv.state==='finish'){for(let y=0;y<H;y+=8)for(let x=0;x<16;x+=8)R(W-40+x,y,8,8,((x+y)/8)%2?'#fff':'#000');txt('CHEGADA!',W/2,70,'#ffd166',16)}
+}
+
+/* =====================================================================
+   DESENHO (mundo a pé)
+   ===================================================================== */
+const TH={
+ day:{sky:['#f6c9c0','#f9ddd5','#fdf0eb'],far:'#d9a7a0',near:'#7fae7a',ground:'#6b4a2b',grass:'#4f9e45',tree:'#2f7a3a',trees:true,sun:true},
+ day2:{sky:['#f3b8ad','#f7d3c9','#fbe8e2'],far:'#c98f87',near:'#9bb58a',ground:'#5b5b5b',grass:'#4f9e45',tree:'#2f7a3a',trees:true,road:true,sun:true},
+ night:{sky:['#120404','#2A0706','#5a0d0b'],far:'#3a0b0a',near:'#1b1b1b',ground:'#2b2b2b',grass:'#4a4a4a',stars:true,moon:true},
+ arena:{sky:['#8E1310','#b8201a','#D3221B'],far:'#6e0f0c',near:'#3a0b0a',ground:'#1a1a1a',grass:'#D3221B',stars:true}
+};
+function R(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h)}
+function txt(s,x,y,c='#fff',size=8,align='center'){size=Math.round(size*1.25);ctx.font=size+'px "Press Start 2P",monospace';ctx.textAlign=align;ctx.textBaseline='top';ctx.fillStyle='#000';ctx.fillText(s,Math.round(x)+1,Math.round(y)+1);ctx.fillStyle=c;ctx.fillText(s,Math.round(x),Math.round(y))}
+function drawBG(){
+  if(level.theme==='hall'){
+    R(0,0,W,GROUND,'#3a0d0b');for(let y=0;y<GROUND;y+=10)for(let x=-(y/10%2)*12;x<W;x+=24)R(x,y,23,9,'#4a1412');
+    R(0,0,W,6,'#120404');R(0,GROUND-6,W,6,'#120404');
+    R(120,14,80,36,'#D3221B');R(122,16,76,32,'#8E1310');txt('ESCOLHA',160,22,'#fff',8);txt('A PORTA',160,34,'#ffd166',8);
+    [100,220].forEach(x=>{R(x,40,4,14,'#5a3a1a');R(x-1,32+(Math.sin(t/5+x)>0?0:1),6,8,'#ffb347');R(x,34,4,4,'#fff3b0')});
+    for(let x=0;x<W;x+=16)R(x,GROUND,16,H-GROUND,(x/16)%2?'#1a1a1a':'#2a2a2a');R(0,GROUND,W,2,'#000');return}
+  if(level.theme==='library'){
+    R(0,0,W,GROUND,'#4a2a14');
+    const bc=['#D3221B','#2f5fa8','#2f8f46','#ffd166','#8E1310','#e8e2d0','#5a2a7a'];
+    for(let sx=-(cam%64);sx<W;sx+=64){R(sx+4,16,56,GROUND-16,'#2b160a');
+      for(let sh=0;sh<4;sh++){const y=22+sh*30;R(sx+6,y+22,52,3,'#5a3418');
+        for(let b=0;b<9;b++){const h=14+((b*7+sh*3+Math.floor((sx+cam)/64))%3)*3;R(sx+8+b*5.6,y+22-h,4,h,bc[(b+sh*2+Math.abs(Math.floor((sx+cam)/64)))%bc.length])}}}
+    R(0,0,W,10,'#2b160a');
+    for(let x=-(cam%24);x<W;x+=24){R(x,GROUND,24,H-GROUND,'#7a4a22');R(x,GROUND,1,H-GROUND,'#5a3418')}R(0,GROUND,W,3,'#3a200c');return}
+  const th=TH[level.theme];
+  R(0,0,W,50,th.sky[0]);R(0,50,W,50,th.sky[1]);R(0,100,W,GROUND-100,th.sky[2]);
+  if(th.stars)for(let i=0;i<40;i++){const sx=(i*97+13)%W,sy=(i*53+7)%90;if((t/20+i)%7>1)R(sx,sy,1,1,'#ffd9d6')}
+  if(th.moon){R(38,14,12,16,'#f3e9e8');R(36,16,16,12,'#f3e9e8');R(41,18,3,3,'#d8c8c6');R(45,23,2,2,'#d8c8c6')}
+  if(th.sun){R(42,20,14,22,'#fff4d6');R(38,24,22,14,'#fff4d6')}
+  for(let x=0;x<W;x+=2){const wx=x+cam*.25,hh=28+10*Math.sin(wx/37)+6*Math.sin(wx/13);R(x,GROUND-hh-16,2,hh+16,th.far)}
+  for(let x=0;x<W;x+=2){const wx=x+cam*.5,hh=14+7*Math.sin(wx/29)+3*Math.sin(wx/9);R(x,GROUND-hh,2,hh,th.near)}
+  if(th.trees&&level.mode==='walk')for(let tx=70;tx<level.w;tx+=130){const sx=tx-cam;if(sx<-20||sx>W)continue;R(sx+6,GROUND-18,4,18,'#5a3a1a');R(sx,GROUND-36,16,20,th.tree);R(sx+2,GROUND-42,12,6,th.tree);R(sx+3,GROUND-33,3,3,'#3f9a4c')}
+  R(0,GROUND,W,H-GROUND,th.ground);R(0,GROUND,W,4,th.grass);
+  for(let x=-(cam%16);x<W;x+=16){R(x+4,GROUND+10,2,2,'rgba(0,0,0,.25)');R(x+11,GROUND+20,2,2,'rgba(0,0,0,.25)')}
+  if(th.road)for(let x=-(cam%32);x<W;x+=32)R(x,GROUND+14,16,2,'#e8d27a');
+}
+function icon(type,x,y){
+  if(type==='posto'){R(x+8,y+2,12,18,'#D3221B');R(x+10,y+4,8,6,'#fff');R(x+20,y+6,2,10,'#111');R(x+22,y+14,3,2,'#111');R(x+6,y+20,16,2,'#333')}
+  if(type==='torre'){for(let i=0;i<18;i++){R(x+14-i/3,y+3+i,1,1,'#555');R(x+14+i/3,y+3+i,1,1,'#555')}R(x+9,y+12,11,1,'#555');R(x+13,y+1,3,3,'#D3221B');R(x+2,y+6,6,1,'#333');R(x+20,y+6,6,1,'#333')}
+  if(type==='soja'){R(x+13,y+6,2,16,'#2f7a3a');R(x+7,y+8,6,4,'#4f9e45');R(x+15,y+5,6,4,'#4f9e45');R(x+8,y+15,5,3,'#4f9e45');R(x+16,y+13,4,6,'#c9b25a');R(x+17,y+14,2,1,'#e8d27a');R(x+17,y+17,2,1,'#e8d27a')}
+}
+function bubble(x,y,ok){R(x,y,10,11,'#000');R(x+1,y+1,8,9,ok?'#3fbf6a':'#ffd166');if(ok){R(x+3,y+5,2,2,'#fff');R(x+5,y+6,2,2,'#fff');R(x+7,y+3,2,3,'#fff')}else{R(x+4,y+2,2,4,'#000');R(x+4,y+7,2,2,'#000')}}
+function drawEnt(e){
+  const sx=e.x-cam;if(sx<-120||sx>W+20)return;
+  if(e.type==='npc'){ctx.save();ctx.translate(sx+PW,GROUND-PH);ctx.scale(-1,1);ctx.drawImage(spr(e.key,0),0,0,PW,PH);ctx.restore();bubble(sx+7,GROUND-PH-14+Math.round(Math.sin(t/8)*2),e.used)}
+  if(e.type==='gate'){R(sx-2,GROUND-60,14,4,'#333');R(sx-2,GROUND-60,3,60,'#555');R(sx+9,GROUND-60,3,60,'#555');
+    if(e.solid()){for(let i=0;i<3;i++)R(sx+1+i*3,GROUND-56,2,56,'#8E1310');R(sx+1,GROUND-34,8,8,'#ffd166');R(sx+4,GROUND-31,2,3,'#000')}else R(sx+3,GROUND-58,4,2,'#3fbf6a')}
+  if(e.type==='flag'){R(sx+4,GROUND-64,3,64,'#ddd');R(sx+3,GROUND-66,5,3,'#ffd166');
+    for(let i=0;i<20;i++){const yy=Math.round(Math.sin(t/6+i/3)*1.5);R(sx+7+i,GROUND-62+yy,1,14-Math.floor(i/3),'#D3221B')}txt('FIM',sx+5,GROUND-78,'#fff',8)}
+  if(e.type==='station'){R(sx+16,GROUND-30,4,30,'#5a3a1a');R(sx-2,GROUND-60,40,32,'#000');R(sx,GROUND-58,36,28,'#f5e6c8');icon(e.ico,sx+4,GROUND-56);
+    txt(e.tag,sx+18,GROUND-74,e.used?'#3fbf6a':'#fff',8);
+    if(e.used){R(sx+24,GROUND-58,12,12,'#3fbf6a');R(sx+26,GROUND-52,2,2,'#fff');R(sx+28,GROUND-50,2,2,'#fff');R(sx+30,GROUND-56,2,6,'#fff')}
+    else bubble(sx+13,GROUND-90+Math.round(Math.sin(t/8)*2),false)}
+  if(e.type==='door'){const c=e.k==='prev'?'#D3221B':'#3a3a3a',d=e.k==='prev'?'#8E1310':'#1d1d1d';
+    R(sx-4,GROUND-64,52,64,'#120404');R(sx,GROUND-60,44,60,c);R(sx+4,GROUND-56,16,24,d);R(sx+24,GROUND-56,16,24,d);R(sx+4,GROUND-28,16,24,d);R(sx+24,GROUND-28,16,24,d);R(sx+36,GROUND-32,4,4,'#ffd166');
+    txt(e.k==='prev'?'PREVENÇÃO':'PRECAUÇÃO',sx+22,GROUND-80,e.k==='prev'?'#ff6b5e':'#fff',8)}
+  if(e.type==='block'){const oy=e.bumpT>0?-Math.round(e.bumpT/2):0;R(sx,e.y+oy,e.w,e.h,'#000');R(sx+1,e.y+oy+1,e.w-2,e.h-2,'#D3221B');R(sx+2,e.y+oy+2,e.w-4,2,'#ff6b5e');R(sx+2,e.y+oy+e.h-4,e.w-4,2,'#8E1310');
+    txt(e.k?'V':'F',sx+e.w/2+1,e.y+oy+7,'#fff',8);txt(e.k?'VERDADEIRO':'FALSO',sx+e.w/2,e.y-14,'#ffd166',8)}
+  if(e.type==='boss'){const dead=lv.hp<=0,bx=sx,by=GROUND-56;
+    R(bx+14,by-34,12,34,'#444');R(bx+66,by-26,12,26,'#444');R(bx+14,by-34,12,4,'#D3221B');R(bx+66,by-26,12,4,'#D3221B');
+    if(!dead)for(let i=0;i<4;i++){const ph=(t/2+i*18)%72;R(bx+16+Math.sin(ph/9)*4,by-40-ph,8-ph/12,8-ph/12,'rgba(140,140,140,'+(1-ph/72)+')');R(bx+68+Math.sin(ph/7)*4,by-32-ph*.8,7-ph/12,7-ph/12,'rgba(120,120,120,'+(1-ph/72)+')')}
+    R(bx,by,104,56,'#000');R(bx+2,by+2,100,52,dead?'#666':'#5a5a5a');for(let i=0;i<5;i++){R(bx+2+i*20,by-8,20,8,'#000');R(bx+4+i*20,by-6,16,6,'#777')}
+    if(dead){[30,62].forEach(x=>{R(bx+x,by+12,10,2,'#111');R(bx+x+4,by+8,2,10,'#111')})}
+    else{R(bx+24,by+12,16,10,'#ffd166');R(bx+62,by+12,16,10,'#ffd166');R(bx+30,by+14,6,6,'#D3221B');R(bx+68,by+14,6,6,'#D3221B');R(bx+22,by+8,18,3,'#111');R(bx+62,by+8,18,3,'#111')}
+    R(bx+30,by+32,44,14,'#111');for(let i=0;i<6;i++)R(bx+33+i*7,by+34,4,10,dead?'#333':'#D3221B');
+    txt('AGRONOVA',bx+52,by-58,'#fff',8);R(bx+12,by-46,80,8,'#fff');R(bx+14,by-44,76,4,'#000');R(bx+14,by-44,Math.round(76*lv.hp/100),4,'#D3221B')}
+}
+function drawPlayer(hide){
+  if(hide)return;const sx=P.x-cam;ctx.save();
+  if(P.face<0){ctx.translate(sx+PW,P.y);ctx.scale(-1,1)}else ctx.translate(sx,P.y);
+  ctx.drawImage(spr(avatar,P.onGround?P.frame:1),0,0,PW,PH);ctx.restore();
+  R(sx+4,GROUND+1,16,2,'rgba(0,0,0,.25)');
+  if(level.mode==='walk')txt(pname.slice(0,8),sx+PW/2,P.y-14,'#fff',8);
+}
+
+/* =====================================================================
+   LOOP
+   ===================================================================== */
+let last=performance.now();
+function loop(now){
+  const dt=Math.min(3,(now-last)/16.67);last=now;t+=dt;
+  if(level&&!$('scrGame').classList.contains('hidden')){
+    if(!paused)(level.update||updateWalk)(dt);
+    if(level.draw)level.draw();
+    else{cam=Math.max(0,Math.min(level.w-W,P.x-140));drawBG();ents.forEach(drawEnt);drawPlayer();ents.forEach(e=>{if(e.bumpT>0)e.bumpT-=dt})}
+  }
+  requestAnimationFrame(loop);
+}
+function updateWalk(dt){
+  const ax=(keys.right?1:0)-(keys.left?1:0);P.vx=ax*1.7;if(ax)P.face=ax;
+  if(keys.jump&&P.onGround){P.vy=-5.4;P.onGround=false;sfx.jump()}
+  const px=P.x,py=P.y;P.vy+=.3*dt;P.x+=P.vx*dt;P.y+=P.vy*dt;
+  if(ax&&P.onGround){P.anim+=dt;if(P.anim>8){P.anim=0;P.frame^=1}}else if(!ax)P.frame=0;
+  for(const e of ents)if(e.solid&&e.solid()&&P.x+PW>e.x&&px+PW<=e.x+2){P.x=e.x-PW;e.bump&&e.bump()}
+  P.x=Math.max(0,Math.min(level.w-PW,P.x));
+  if(P.y+PH>=GROUND){P.y=GROUND-PH;P.vy=0;P.onGround=true}
+  for(const e of ents)if(e.type==='block'&&P.vy<0&&P.x+PW/2>e.x-8&&P.x+PW/2<e.x+e.w+8&&P.y<=e.y+e.h&&py>e.y+e.h-1){P.y=e.y+e.h;P.vy=1;sfx.bump();e.hit(e);return}
+  for(const e of ents){if(!e.touch||e.used)continue;if(P.x+PW>e.x+4&&P.x<e.x+e.w-4){e.touch(e);return}}
+}
+
+/* =====================================================================
+   FINAL: TROFÉU, MEDALHA OU PEDRA
+   ===================================================================== */
+let endRAF=0;
+function showEnd(){
+  show('scrEnd');const pct=Math.round(score/maxScore*100);
+  const kind=pct>=85?'gold':pct>=70?'silver':pct>=50?'medal':'stone';
+  const head={gold:'🏆 TROFÉU DE OURO! O GUANABINHA APROVA: VOCÊ É FERA EM DIREITO AMBIENTAL!',silver:'🏆 TROFÉU DE PRATA! MANDOU MUITO BEM!',medal:'🥉 MEDALHA DE BRONZE. QUASE LÁ, REVISE OS PONTOS ABAIXO!',stone:'🪨 VOCÊ PRECISA ESTUDAR!'}[kind];
+  const seen=new Set(),rev=mistakes.filter(m=>!seen.has(m.topic)&&seen.add(m.topic));
+  $('scrEnd').innerHTML=`
+  <div class="frame" id="endFrame">
+    <canvas id="endCv" width="320" height="180"></canvas>
+    <div class="endtop"><div><div class="px" style="font-size:calc((10px)*var(--s));color:#f3c9c5">${pname} · MISSÃO CONCLUÍDA</div><div class="pct">${pct}%</div><div>${score} de ${maxScore} pontos</div></div><img class="logo" src="${LOGO}" alt="Logo do jogo"></div>
+    <h2 style="margin-top:14px">${head}</h2>
+    ${kind==='stone'?'<p><b>Guanabinha diz:</b> “Bora estudar!” 📚</p><p>Não desanime: releia a <b>Trilha dos Conceitos</b> e os pontos abaixo, depois jogue de novo. A pedra sai do caminho com estudo! 📚</p>':''}
+    ${rev.length?'<h3>O QUE REVISAR</h3><ul class="rev">'+rev.map(m=>`<li><b>${m.topic}:</b> ${m.e}</li>`).join('')+'</ul>':'<p>Você não errou nenhuma questão. 🏆</p>'}
+    <h3>RESUMO PARA LEVAR</h3>
+    <p><b style="color:#ff6b5e">PREVENÇÃO</b> = risco <b>conhecido</b> → evitar o dano previsível (licenciamento, condicionantes, padrões de emissão).<br><b>PRECAUÇÃO</b> = risco <b>incerto</b>, mas plausível e grave → a dúvida favorece o meio ambiente (<i>in dubio pro natura</i>) e pode inverter o ônus da prova (Súmula 618/STJ).<br><b>EIA/RIMA</b> e a <b>Lei 11.105/05</b> dialogam com os <b>dois</b> princípios.<br><b>Dano já ocorrido</b> → <b>poluidor-pagador</b> (recuperar e indenizar, Lei 6.938/81, art. 4º, VII).<br><b>Os dois</b> são antecipatórios e aparecem juntos na PNRS (Lei 12.305/10, art. 6º, I) e na PNMC (Lei 12.187/09, art. 3º).</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px"><button class="pbtn" onclick="cancelAnimationFrame(endRAF);startGame()">↺ JOGAR DE NOVO</button><button class="pbtn alt" onclick="cancelAnimationFrame(endRAF);show('scrSelect')">TROCAR AVATAR</button></div>
+  </div>
+  <div class="frame">
+    <h2>REFERÊNCIAS</h2>
+    <ol class="refs">
+      <li>BRASIL. <b>Constituição Federal de 1988</b>, art. 5º, LXXIII; art. 170, VI; art. 225, caput, §1º, IV e V, e §3º.</li>
+      <li>BRASIL. <b>Lei nº 6.938/1981</b> (Política Nacional do Meio Ambiente), arts. 4º, VII, 9º, 10 e 14, §1º.</li>
+      <li>BRASIL. <b>Lei nº 9.605/1998</b> (Crimes Ambientais), art. 54, §3º.</li>
+      <li>BRASIL. <b>Lei nº 11.105/2005</b> (Biossegurança), arts. 1º, 14, XVII e 18, II.</li>
+      <li>BRASIL. <b>Lei nº 12.187/2009</b> (Política Nacional sobre Mudança do Clima), art. 3º.</li>
+      <li>BRASIL. <b>Lei nº 12.305/2010</b> (Política Nacional de Resíduos Sólidos), art. 6º, I.</li>
+      <li>CONAMA. <b>Resolução nº 237/1997</b> e <b>Resolução nº 273/2000</b>.</li>
+      <li>ONU. <b>Declaração do Rio sobre Meio Ambiente e Desenvolvimento</b> (1992), Princípio 15.</li>
+      <li>STJ. <b>Súmulas 613, 618 e 629</b>.</li>
+      <li>STF. <b>RE 627.189/SP</b>, Rel. Min. Dias Toffoli, Pleno, j. 08/06/2016 (Tema 479).</li>
+      <li>MACHADO, Paulo Affonso Leme. <b>Direito Ambiental Brasileiro</b> (edição mais recente).</li>
+      <li>MILARÉ, Édis. <b>Direito do Ambiente</b> (edição mais recente).</li>
+    </ol>
+  </div>
+  <div class="frame">
+    <h2>DECLARAÇÃO DE USO DE IA</h2>
+    <div class="ia">
+      <p><b>Ferramenta:</b> Claude (Anthropic).</p>
+      <p><b>Finalidade:</b> estruturação do roteiro pedagógico, redação inicial dos textos, criação dos casos fictícios e das questões, desenho dos personagens em pixel art e programação do jogo em HTML/JavaScript.</p>
+      <p><b>Equipe:</b> Anna Gatto · Vitória Nascimento · Martha Lopes · Leonardo Rustom · Maria Luiza · Mariana Ledoux · Saulo Lopes.</p><p style="margin:0"><b>Revisão humana:</b> todo o conteúdo jurídico foi conferido pelo grupo nas fontes oficiais. <i>[Grupo: ajustem ao uso real.]</i></p>
+    </div>
+  </div>`;
+  endScene(kind);
+}
+function endScene(kind){
+  const c=$('endCv'),g=c.getContext('2d');g.imageSmoothingEnabled=false;
+  const Rr=(x,y,w,h,col)=>{g.fillStyle=col;g.fillRect(Math.round(x),Math.round(y),w,h)};
+  const T=(s,x,y,col,size=8)=>{size=Math.round(size*1.25);g.font=size+'px "Press Start 2P",monospace';g.textAlign='center';g.textBaseline='top';g.fillStyle='#000';g.fillText(s,x+2,y+2);g.fillStyle=col;g.fillText(s,x,y)};
+  let f=0,landed=false;const conf=[],dust=[];
+  if(kind==='gold'||kind==='silver'){sfx.fanfare();for(let i=0;i<70;i++)conf.push({x:Math.random()*320,y:-Math.random()*180,v:.6+Math.random()*1.2,c:['#D3221B','#ffd166','#fff','#3fbf6a','#4aa3df'][i%5],w:Math.random()*6})}
+  else if(kind==='medal')sfx.win();
+  const metal=kind==='gold'?['#ffd166','#e6a400','#fff3b0','#a87400']:['#e6e6e6','#a8a8a8','#ffffff','#6e6e6e'];
+  function trophy(x,y){const[m,d,l,s]=metal;
+    Rr(x-30,y,60,6,s);Rr(x-28,y,56,4,m); // borda
+    Rr(x-26,y+6,52,30,s);Rr(x-24,y+6,48,28,m);Rr(x-20,y+8,8,22,l);Rr(x+14,y+8,6,24,d);
+    Rr(x-40,y+8,14,4,s);Rr(x-42,y+8,4,18,s);Rr(x-40,y+22,14,4,s);Rr(x-39,y+9,12,2,m);Rr(x-41,y+10,2,15,m);
+    Rr(x+26,y+8,14,4,s);Rr(x+38,y+8,4,18,s);Rr(x+26,y+22,14,4,s);Rr(x+27,y+9,12,2,m);Rr(x+39,y+10,2,15,m);
+    Rr(x-18,y+34,36,8,s);Rr(x-16,y+34,32,6,m);Rr(x-6,y+42,12,14,s);Rr(x-4,y+42,8,14,m);
+    Rr(x-24,y+56,48,8,s);Rr(x-22,y+56,44,6,d);Rr(x-28,y+64,56,10,'#2a1206');Rr(x-26,y+66,52,6,'#4a2410');
+    Rr(x-6,y+16,12,12,d);Rr(x-4,y+18,8,8,l);Rr(x-1,y+14,2,16,l);Rr(x-8,y+21,16,2,l)}
+  function stone(x,y){
+    Rr(x-58,y+8,116,52,'#3a3a3a');Rr(x-50,y,100,68,'#3a3a3a');Rr(x-54,y+4,108,60,'#6e6e6e');Rr(x-46,y,92,4,'#8a8a8a');Rr(x-50,y+6,30,6,'#9a9a9a');Rr(x+30,y+48,18,10,'#5a5a5a');Rr(x-40,y+52,12,6,'#5a5a5a');
+    g.font='8px "Press Start 2P",monospace';g.textAlign='center';g.textBaseline='top';g.fillStyle='#9a9a9a';g.fillText('VOCÊ PRECISA',x+1,y+19);g.fillText('ESTUDAR!',x+1,y+35);
+    g.fillStyle='#161616';g.fillText('VOCÊ PRECISA',x,y+18);g.fillText('ESTUDAR!',x,y+34);Rr(x-20,y+4,2,8,'#3a3a3a');Rr(x-18,y+11,2,6,'#3a3a3a');Rr(x+34,y+30,2,10,'#3a3a3a')}
+  const mate=avatar==='guana'?'est':'guana';
+  function avatarAt(x,y,flip,frame=0,key=avatar){g.save();if(flip){g.translate(x+36,y);g.scale(-1,1)}else g.translate(x,y);g.drawImage(spr(key,frame),0,0,36,48);g.restore()}
+  const step=()=>{f++;
+    if(kind==='stone'){
+      Rr(0,0,320,140,'#4a4a52');Rr(0,0,320,40,'#3a3a42');for(let i=0;i<30;i++)Rr((i*47+f*.5)%330-10,(i*31)%120,1,6,'rgba(200,200,220,.35)');
+      Rr(0,140,320,40,'#2b2b2b');Rr(0,140,320,3,'#555');
+      const sy=Math.min(80,-120+Math.pow(Math.max(0,f-40),2)*.09);
+      const shadowW=Math.max(10,Math.min(110,(f-30)*1.6));Rr(200-shadowW/2,141,shadowW,4,'rgba(0,0,0,.45)');
+      if(!landed&&sy>=80){landed=true;sfx.thud();$('endFrame').classList.add('shake');setTimeout(()=>{$('endFrame').classList.remove('shake');sfx.sad()},600);for(let i=0;i<26;i++)dust.push({x:200+(Math.random()-.5)*120,y:140,vx:(Math.random()-.5)*3,vy:-Math.random()*2.2,l:40})}
+      stone(200,sy-8);
+      if(landed){Rr(130,143,16,2,'#111');Rr(146,145,10,2,'#111');Rr(250,143,20,2,'#111');Rr(262,146,8,2,'#111')}
+      dust.forEach(d=>{d.x+=d.vx;d.y+=d.vy;d.vy+=.05;d.l--;if(d.l>0)Rr(d.x,d.y,3,3,'rgba(180,170,160,'+d.l/40+')')});
+      avatarAt(70,92,false,landed&&f%40<20?1:0);avatarAt(272,92,true,0,mate);
+      if(landed)Rr(102,94+(f%30)/3,3,5,'#9fd3ff');
+      T(landed?'VOCÊ PRECISA ESTUDAR!':'CUIDADO…',160,landed?14:20,landed?'#ff6b5e':'#fff',landed?12:8);
+    }else if(kind==='medal'){
+      Rr(0,0,320,180,'#2A0706');for(let i=0;i<12;i++){g.fillStyle=i%2?'#3a0d0b':'#2A0706';g.beginPath();g.moveTo(160,70);const a=i/12*Math.PI*2+f/200,b=(i+1)/12*Math.PI*2+f/200;g.lineTo(160+Math.cos(a)*400,70+Math.sin(a)*400);g.lineTo(160+Math.cos(b)*400,70+Math.sin(b)*400);g.fill()}
+      g.save();g.translate(160,8);g.rotate(Math.sin(f/25)*.15);
+      Rr(-14,0,10,60,'#D3221B');Rr(4,0,10,60,'#8E1310');Rr(-22,56,44,44,'#000');Rr(-20,58,40,40,'#b06a2a');Rr(-16,62,32,32,'#d08a44');Rr(-12,66,10,10,'#f0b070');
+      g.font='16px "Press Start 2P",monospace';g.textAlign='center';g.textBaseline='top';g.fillStyle='#6a3a10';g.fillText('3',1,70);g.restore();
+      avatarAt(40,110,false,f%30<15?1:0);avatarAt(246,110,true,f%30<15?0:1,mate);T('QUASE LÁ!',160,150,'#ffd166',12);
+    }else{
+      Rr(0,0,320,180,'#2A0706');for(let i=0;i<16;i++){g.fillStyle=i%2?(kind==='gold'?'#5a1a0a':'#3a2a2a'):'#2A0706';g.beginPath();g.moveTo(160,80);const a=i/16*Math.PI*2+f/120,b=(i+1)/16*Math.PI*2+f/120;g.lineTo(160+Math.cos(a)*400,80+Math.sin(a)*400);g.lineTo(160+Math.cos(b)*400,80+Math.sin(b)*400);g.fill()}
+      const ty=Math.max(36,190-f*2.2);trophy(160,ty);
+      if(ty<=36&&f%20<10){Rr(112,40,3,3,'#fff');Rr(204,60,3,3,'#fff');Rr(150,30,2,2,'#fff')}
+      conf.forEach(p=>{p.y+=p.v;p.x+=Math.sin((p.y+p.w*20)/20)*.6;if(p.y>180){p.y=-6;p.x=Math.random()*320}Rr(p.x,p.y,3,3,p.c)});
+      const jump=Math.abs(Math.sin(f/10))*10;avatarAt(30,124-jump,false,1);avatarAt(254,124-Math.abs(Math.sin(f/10+1))*10,true,1,mate);
+      T(kind==='gold'?'CAMPEÃ(O)!':'MUITO BEM!',160,8,'#ffd166',12);T(pname.slice(0,12),160,ty+80,'#fff',8);
+    }
+    endRAF=requestAnimationFrame(step)};
+  cancelAnimationFrame(endRAF);step();
+}
+
+/* =====================================================================
+   CONTROLES
+   ===================================================================== */
+const KM={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'jump',KeyW:'jump',Space:'jump',ArrowDown:'down',KeyS:'down'};
+addEventListener('keydown',e=>{
+  if(!$('modal').classList.contains('hidden')){if(e.key==='Enter'){const b=[...document.querySelectorAll('#mbtns .pbtn')].pop();if(b&&!b.disabled){e.preventDefault();b.click()}}return}
+  if(document.activeElement&&document.activeElement.tagName==='INPUT'){if(e.key==='Enter'&&avatar)startGame();return}
+  const k=KM[e.code];if(!k||$('scrGame').classList.contains('hidden'))return;e.preventDefault();
+  if(level&&level.onKey){if(!e.repeat)level.onKey(k);return}
+  if(k!=='down')keys[k]=true;
+});
+addEventListener('keyup',e=>{const k=KM[e.code];if(k&&k!=='down')keys[k]=false});
+document.querySelectorAll('#pad button').forEach(b=>{const k=b.dataset.k;
+  const on=e=>{e.preventDefault();b.classList.add('on');if(level&&level.onPad){level.onPad(k);return}keys[k]=true},
+        off=e=>{e.preventDefault();b.classList.remove('on');keys[k]=false};
+  b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointerleave',off);b.addEventListener('pointercancel',off);b.addEventListener('contextmenu',e=>e.preventDefault())});
+addEventListener('blur',()=>{keys.left=keys.right=keys.jump=false});
+</script>
+</body>
+</html>
